@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Jueying - Multiplexor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-bottom: 20px; text-align: center; }
+        input, button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        input { background: white; color: #333; width: 200px; }
+        button {
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background: #45a049; transform: translateY(-2px); }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status.online { background: #4CAF50; }
+        .status.offline { background: #f44336; }
+        #log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .log-entry { margin-bottom: 5px; }
+        .log-info { color: #4CAF50; }
+        .log-error { color: #f44336; }
+        .log-warn { color: #ff9800; }
+        .log-system { color: #2196F3; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .joystick-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            margin: 20px auto;
+            touch-action: none;
+        }
+        .joystick {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            touch-action: none;
+        }
+        .joystick:active { cursor: grabbing; background: #45a049; }
+        .telemetry { text-align: center; font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Test Multiplexor Jueying Lite3</h1>
+        
+        <!-- Autenticación -->
+        <div class="panel" id="authPanel">
+            <h2>🔐 Autenticación</h2>
+            <div>
+                <input id="username" type="text" placeholder="Usuario" value="operator1">
+                <input id="password" type="password" placeholder="Contraseña" value="password123">
+                <button onclick="login()">Iniciar Sesión</button>
+            </div>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                <small>Usuarios: operator1/password123 o admin/admin123</small>
+            </p>
+        </div>
+
+        <!-- Estados -->
+        <div class="panel">
+            <h2>📊 Estado del Sistema</h2>
+            <div class="grid">
+                <div>
+                    <span class="status offline" id="wsStatus"></span>
+                    <span id="wsText">WebSocket: Desconectado</span>
+                </div>
+                <div>
+                    <span class="status offline" id="rosStatus"></span>
+                    <span id="rosText">ROS: Desconectado</span>
+                </div>
+                <div>
+                    <span class="status offline" id="authStatus"></span>
+                    <span id="authText">Auth: No autenticado</span>
+                </div>
+                <div>
+                    <span class="status offline" id="ctrlStatus"></span>
+                    <span id="ctrlText">Control: Sin control</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="panel" id="controlPanel" style="display:none;">
+            <h2>🎮 Panel de Control</h2>
+            <div class="grid">
+                <button id="reqCtrlBtn" onclick="requestControl()">📡 Solicitar Control</button>
+                <button id="relCtrlBtn" onclick="releaseControl()" disabled>🚪 Liberar Control</button>
+                <button onclick="sendStand()" disabled id="standBtn">⬆️ Stand Up</button>
+                <button onclick="sendSit()" disabled id="sitBtn">⬇️ Sit Down</button>
+            </div>
+            
+            <!-- Joystick -->
+            <div class="joystick-container" id="joystickContainer">
+                <div class="joystick" id="joystick"></div>
+            </div>
+            <div class="grid">
+                <div class="telemetry">
+                    <div id="linearX">0.00</div>
+                    <small>Linear X (m/s)</small>
+                </div>
+                <div class="telemetry">
+                    <div id="angularZ">0.00</div>
+                    <small>Angular Z (rad/s)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div class="panel">
+            <h2>📝 Log de Eventos</h2>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let token = null;
+        let hasControl = false;
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const resp = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await resp.json();
+                
+                if (data.success) {
+                    token = data.accessToken;
+                    log('info', `✅ Login exitoso: ${data.user.username} (${data.user.role})`);
+                    document.getElementById('authPanel').style.display = 'none';
+                    document.getElementById('controlPanel').style.display = 'block';
+                    updateStatus('auth', true, `Auth: ${username}`);
+                    connectWS();
+                } else {
+                    log('error', '❌ Login fallido: ' + data.error);
+                }
+            } catch (error) {
+                log('error', '❌ Error: ' + error.message);
+            }
+        }
+
+        function connectWS() {
+            ws = new WebSocket('ws://localhost:8080');
+            
+            ws.onopen = () => {
+                log('system', '🔌 WebSocket conectado');
+                updateStatus('ws', true, 'WebSocket: Conectado');
+            };
+            
+            ws.onmessage = (evt) => {
+                const msg = JSON.parse(evt.data);
+                handleMessage(msg);
+            };
+            
+            ws.onclose = () => {
+                log('warn', '⚠️ WebSocket cerrado');
+                updateStatus('ws', false, 'WebSocket: Desconectado');
+                setTimeout(connectWS, 3000);
+            };
+            
+            ws.onerror = (e) => log('error', '❌ Error WebSocket');
+        }
+
+        function handleMessage(msg) {
+            log('system', '📨 ' + msg.type);
+            
+            switch(msg.type) {
+                case 'connected':
+                    ws.send(JSON.stringify({ type: 'auth', token: token }));
+                    break;
+                case 'auth_success':
+                    log('info', '✅ Autenticado con WebSocket');
+                    break;
+                case 'ros_connection':
+                    updateStatus('ros', msg.connected, `ROS: ${msg.connected ? 'Conectado' : 'Desconectado'}`);
+                    break;
+                case 'control_granted':
+                    hasControl = true;
+                    updateStatus('ctrl', true, 'Control: ACTIVO');
+                    enableControls(true);
+                    break;
+                case 'control_denied':
+                    log('warn', `⚠️ Control denegado: ${msg.reason}`);
+                    break;
+                case 'control_released':
+                    hasControl = false;
+                    updateStatus('ctrl', false, 'Control: Liberado');
+                    enableControls(false);
+                    break;
+                case 'ros_data':
+                    // Mostrar datos de ROS si es relevante
+                    break;
+            }
+        }
+
+        function requestControl() {
+            ws.send(JSON.stringify({ type: 'control_request', action: 'request' }));
+            log('info', '📡 Solicitando control...');
+        }
+
+        function releaseControl() {
+            ws.send(JSON.stringify({ type: 'control_request', action: 'release' }));
+            sendVelocity(0, 0); // Detener primero
+        }
+
+        function sendStand() {
+            sendROSCommand('/pose_cmd', 'std_msgs/String', { data: 'stand' });
+            log('info', '⬆️ Comando: Stand Up');
+        }
+
+        function sendSit() {
+            sendROSCommand('/pose_cmd', 'std_msgs/String', { data: 'sit' });
+            log('info', '⬇️ Comando: Sit Down');
+        }
+
+        function sendROSCommand(topic, msgType, msg) {
+            ws.send(JSON.stringify({
+                type: 'ros_command',
+                topic: topic,
+                msgType: msgType,
+                msg: msg
+            }));
+        }
+
+        function sendVelocity(linear, angular) {
+            if (!hasControl) return;
+            
+            sendROSCommand('/cmd_vel', 'geometry_msgs/Twist', {
+                linear: { x: linear, y: 0, z: 0 },
+                angular: { x: 0, y: 0, z: angular }
+            });
+            
+            document.getElementById('linearX').textContent = linear.toFixed(2);
+            document.getElementById('angularZ').textContent = angular.toFixed(2);
+        }
+
+        // Joystick
+        const container = document.getElementById('joystickContainer');
+        const joystick = document.getElementById('joystick');
+        let dragging = false;
+        const radius = 100;
+
+        function handleStart(e) {
+            if (!hasControl) return;
+            dragging = true;
+            joystick.style.transition = 'none';
+        }
+
+        function handleEnd() {
+            if (!dragging) return;
+            dragging = false;
+            joystick.style.transition = '0.2s';
+            joystick.style.left = '50%';
+            joystick.style.top = '50%';
+            sendVelocity(0, 0);
+        }
+
+        function handleMove(e) {
+            if (!dragging) return;
+            e.preventDefault();
+            
+            const rect = container.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            let x = clientX - rect.left - radius;
+            let y = clientY - rect.top - radius;
+            
+            const dist = Math.sqrt(x*x + y*y);
+            if (dist > 80) {
+                x = (x / dist) * 80;
+                y = (y / dist) * 80;
+            }
+            
+            joystick.style.left = `${radius + x}px`;
+            joystick.style.top = `${radius + y}px`;
+            
+            const linear = -y / 80;
+            const angular = x / 80;
+            sendVelocity(linear, angular);
+        }
+
+        container.addEventListener('mousedown', handleStart);
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('mousemove', handleMove);
+        container.addEventListener('touchstart', handleStart);
+        document.addEventListener('touchend', handleEnd);
+        document.addEventListener('touchmove', handleMove);
+
+        // Heartbeat
+        setInterval(() => {
+            if (ws?.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'heartbeat' }));
+            }
+        }, 5000);
+
+        function enableControls(enabled) {
+            document.getElementById('standBtn').disabled = !enabled;
+            document.getElementById('sitBtn').disabled = !enabled;
+            document.getElementById('relCtrlBtn').disabled = !enabled;
+            document.getElementById('reqCtrlBtn').disabled = enabled;
+        }
+
+        function updateStatus(type, online, text) {
+            document.getElementById(type + 'Status').className = 'status ' + (online ? 'online' : 'offline');
+            document.getElementById(type + 'Text').textContent = text;
+        }
+
+        function log(type, msg) {
+            const div = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            div.innerHTML += `<div class="log-entry log-${type}">[${time}] ${msg}</div>`;
+            div.scrollTop = div.scrollHeight;
+        }
+
+        log('system', '🚀 Sistema iniciado. Por favor inicia sesión.');
+    </script>
+</body>
+</html>

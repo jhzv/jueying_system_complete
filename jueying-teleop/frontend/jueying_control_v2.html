@@ -1,0 +1,2360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Jueying Lite3 - Control Remoto</title>
+    
+    <!-- HLS.js Library for Video Streaming -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #141b2d;
+            --bg-tertiary: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ============= LAYOUT PRINCIPAL (DESKTOP) ============= */
+        .container {
+            display: grid;
+            grid-template-areas:
+                "header header header"
+                "left-panel center right-panel"
+                "footer footer footer";
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 60px 1fr 50px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* ============= HEADER ============= */
+        .header {
+            grid-area: header;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .status-dot {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .dot.connected { background: var(--success); }
+        .dot.disconnected { background: var(--danger); }
+        .dot.warning { background: var(--warning); }
+
+        /* ============= PANEL IZQUIERDO ============= */
+        .left-panel {
+            grid-area: left-panel;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ============= PANEL CENTRAL ============= */
+        .center-panel {
+            grid-area: center;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* ============= PANEL DERECHO ============= */
+        .right-panel {
+            grid-area: right-panel;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ============= FOOTER ============= */
+        .footer {
+            grid-area: footer;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* ============= COMPONENTES REUTILIZABLES ============= */
+        .panel-section {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* ============= BOTONES ============= */
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--bg-secondary);
+        }
+
+        .btn-secondary.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 11px;
+            min-height: 32px;
+        }
+
+        /* ============= LOGIN ============= */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 14, 39, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        /* ============= VIDEO STREAMING SECTION ============= */
+        .video-container {
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .video-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 20px;
+        }
+
+        .video-placeholder-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        #robotVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        #robotVideo.active {
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(10, 14, 39, 0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border);
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(10, 14, 39, 0.9);
+            padding: 8px 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border);
+        }
+
+        .video-status {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(10, 14, 39, 0.9);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            backdrop-filter: blur(4px);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .video-status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+        }
+
+        .video-status-dot.connecting { 
+            background: var(--accent); 
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .video-status-dot.connected { background: var(--success); }
+        .video-status-dot.error { background: var(--danger); }
+        .video-status-dot.stopped { background: #64748b; }
+
+        /* ============= JOYSTICKS ============= */
+        .joystick-container {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            gap: 80px;
+        }
+
+        .joystick-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .joystick {
+            width: 180px;
+            height: 180px;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+            touch-action: none;
+        }
+
+        .joystick-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* ============= MODE SELECTOR ============= */
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: var(--bg-primary);
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ============= GAIT SELECTOR ============= */
+        .gait-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .gait-btn {
+            padding: 8px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-height: 40px;
+        }
+
+        .gait-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .gait-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* ============= TELEMETRY ============= */
+        .telemetry-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .telemetry-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .telemetry-label {
+            color: var(--text-secondary);
+        }
+
+        .telemetry-value {
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ============= LOGS ============= */
+        .log-container {
+            background: var(--bg-primary);
+            border-radius: 6px;
+            padding: 12px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+        }
+
+        .log-message {
+            color: var(--text-primary);
+        }
+
+        .log-message.success {
+            color: var(--success);
+        }
+
+        .log-message.error {
+            color: var(--danger);
+        }
+
+        .log-message.warning {
+            color: var(--warning);
+        }
+
+        .log-message.info {
+            color: var(--accent);
+        }
+
+        /* ============= SCROLLBAR ============= */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* ============= EMERGENCY STOP ============= */
+        .emergency-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .emergency-btn {
+            padding: 16px 32px;
+            background: var(--danger);
+            color: white;
+            border: 3px solid darkred;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            transition: all 0.2s;
+        }
+
+        .emergency-btn:hover {
+            background: darkred;
+            transform: scale(1.05);
+        }
+
+        .emergency-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ============= ANIMATIONS ============= */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* ============= RESPONSIVE - TABLET ============= */
+        @media (max-width: 1366px) {
+            .container {
+                grid-template-columns: 240px 1fr 280px;
+            }
+        }
+
+        /* ============= RESPONSIVE - MÓVIL ============= */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            /* Layout de una sola columna */
+            .container {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding-bottom: 80px; /* Espacio para emergency button */
+            }
+
+            /* Header sticky */
+            .header {
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                flex-shrink: 0;
+                padding: 0 12px;
+                height: 60px;
+            }
+
+            .header-title h1 {
+                font-size: 16px;
+            }
+
+            .status-indicators {
+                gap: 8px;
+            }
+
+            .status-dot {
+                font-size: 10px;
+            }
+
+            .status-dot span:not(.dot) {
+                display: none; /* Ocultar texto, solo mostrar dots */
+            }
+
+            #latencyDisplay {
+                font-size: 10px;
+            }
+
+            /* Paneles apilados */
+            .left-panel,
+            .right-panel,
+            .center-panel {
+                width: 100%;
+                padding: 12px;
+                border: none;
+                overflow: visible;
+            }
+
+            .left-panel,
+            .right-panel {
+                gap: 12px;
+            }
+
+            /* Panel sections más compactas */
+            .panel-section {
+                padding: 12px;
+                margin-bottom: 0;
+            }
+
+            .section-title {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+
+            .section-content {
+                gap: 8px;
+            }
+
+            /* Video más grande en móvil */
+            .video-container {
+                max-width: 100%;
+                width: 100%;
+                margin-bottom: 12px;
+                border-radius: 8px;
+            }
+
+            .video-placeholder-icon {
+                font-size: 48px;
+            }
+
+            .video-overlay,
+            .video-status {
+                font-size: 10px;
+                padding: 6px 8px;
+            }
+
+            /* Joysticks más pequeños y mejor posicionados */
+            .joystick {
+                width: 120px;
+                height: 120px;
+            }
+
+            .joystick-container {
+                position: static;
+                gap: 30px;
+                margin: 20px auto;
+                bottom: auto;
+            }
+
+            .joystick-label {
+                font-size: 11px;
+            }
+
+            /* Botones touch-friendly */
+            .btn {
+                min-height: 44px;
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .btn-small {
+                min-height: 38px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .btn-grid {
+                gap: 10px;
+            }
+
+            /* Mode selector más grande */
+            .mode-btn {
+                padding: 12px;
+                font-size: 14px;
+                min-height: 44px;
+            }
+
+            /* Gait buttons touch-friendly */
+            .gait-btn {
+                min-height: 44px;
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+
+            /* Telemetría compacta */
+            .telemetry-item {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            /* Logs más pequeños */
+            .log-container {
+                height: 150px;
+                font-size: 10px;
+                padding: 8px;
+            }
+
+            /* Emergency button fixed bottom - más prominente */
+            .emergency-container {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transform: none;
+                background: rgba(10, 14, 39, 0.98);
+                padding: 10px 12px;
+                border-top: 2px solid var(--danger);
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+            }
+
+            .emergency-btn {
+                width: 100%;
+                padding: 14px;
+                font-size: 15px;
+                border-radius: 8px;
+            }
+
+            /* Footer compacto */
+            .footer {
+                font-size: 10px;
+                padding: 8px 12px;
+                flex-direction: column;
+                gap: 4px;
+                text-align: center;
+            }
+
+            /* Login box más pequeño */
+            .login-box {
+                padding: 24px;
+                width: 90%;
+            }
+
+            .login-title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* ============= RESPONSIVE - MÓVIL LANDSCAPE ============= */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .container {
+                padding-bottom: 70px;
+            }
+
+            .joystick-container {
+                gap: 40px;
+                margin: 12px auto;
+            }
+
+            .joystick {
+                width: 100px;
+                height: 100px;
+            }
+
+            .video-container {
+                max-height: 50vh;
+            }
+
+            .emergency-container {
+                padding: 8px 12px;
+            }
+
+            .emergency-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+
+        /* ============= RESPONSIVE - PANTALLAS MUY PEQUEÑAS ============= */
+        @media (max-width: 360px) {
+            .header-title h1 {
+                font-size: 14px;
+            }
+
+            .joystick {
+                width: 100px;
+                height: 100px;
+            }
+
+            .joystick-container {
+                gap: 20px;
+            }
+
+            .btn {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+
+            .gait-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============= NOTIFICACIONES TOAST (NUEVAS) ============= */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            min-width: 300px;
+            max-width: 400px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-left: 4px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast-notification.toast-warning {
+            border-left-color: var(--warning);
+            background: #2c1810;
+        }
+
+        .toast-notification.toast-error {
+            border-left-color: var(--danger);
+            background: #2c1010;
+        }
+
+        .toast-notification.toast-info {
+            border-left-color: var(--accent);
+        }
+
+        .toast-notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .toast-notification-message {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Status badge colors */
+        #controlStatus.status-has-control {
+            color: var(--success) !important;
+            font-weight: 600;
+        }
+
+        #controlStatus.status-other-control {
+            color: var(--warning) !important;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .toast-notification {
+                top: 70px;
+                right: 12px;
+                left: 12px;
+                min-width: auto;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN OVERLAY -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-box">
+            <h2 class="login-title">🤖 Jueying Lite3</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" id="username" class="form-input" placeholder="admin / operator" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="password" class="form-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Iniciar Sesión</button>
+                <div id="loginError" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container" style="display: none;" id="mainContainer">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-title">
+                <span style="font-size: 24px;">🤖</span>
+                <h1>Jueying Lite3</h1>
+            </div>
+            <div class="status-indicators">
+                <div class="status-dot">
+                    <span class="dot" id="wsStatus"></span>
+                    <span>WebSocket</span>
+                </div>
+                <div class="status-dot">
+                    <span class="dot" id="udpStatus"></span>
+                    <span>UDP</span>
+                </div>
+                <div class="status-dot">
+                    <span class="dot" id="rosStatus"></span>
+                    <span>ROS</span>
+                </div>
+                <div class="status-dot">
+                    <span id="latencyDisplay">0ms</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- LEFT PANEL -->
+        <aside class="left-panel">
+            <!-- Control Section -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <span>🎮 Control</span>
+                </div>
+                <div class="section-content">
+                    <button id="controlBtn" class="btn btn-primary btn-full">
+                        Tomar Control
+                    </button>
+                    <div id="controlStatus" style="font-size: 12px; color: var(--text-secondary); text-align: center; margin-top: 8px;">
+                        Sin control
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode Section -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <span>🔄 Modo</span>
+                </div>
+                <div class="section-content">
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="pose">POSE</button>
+                        <button class="mode-btn" data-mode="move">MOVE</button>
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 8px;">
+                        Modo actual: <span id="currentMode" style="color: var(--accent); font-weight: 600;">POSE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Section (POSE Mode) -->
+            <div class="panel-section" id="actionsSection">
+                <div class="section-title">
+                    <span>⚡ Acciones</span>
+                </div>
+                <div class="section-content">
+                    <button class="btn btn-success btn-full" data-action="sit_stand">
+                        🪑 Stand / Sit
+                    </button>
+                    <div class="btn-grid">
+                        <button class="btn btn-secondary" data-action="say_hello">👋 Saludar</button>
+                        <button class="btn btn-secondary" data-action="twist">🌀 Girar</button>
+                        <button class="btn btn-secondary" data-action="long_jump">🦘 Salto Largo</button>
+                        <button class="btn btn-secondary" data-action="twist_jump">🌪️ Salto Giro</button>
+                        <button class="btn btn-secondary" data-action="moonwalk">🕺 Moonwalk</button>
+                        <button class="btn btn-secondary" data-action="zero">📍 Posición 0</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gait Section (MOVE Mode) -->
+            <div class="panel-section" id="gaitSection" style="display: none;">
+                <div class="section-title">
+                    <span>👣 Gait</span>
+                </div>
+                <div class="section-content">
+                    <div class="gait-grid">
+                        <button class="gait-btn" data-gait="flat_slow">🐌 Lento</button>
+                        <button class="gait-btn active" data-gait="flat_medium">🚶 Medio</button>
+                        <button class="gait-btn" data-gait="flat_fast">🏃 Rápido</button>
+                        <button class="gait-btn" data-gait="flat_crawl">🦎 Gateo</button>
+                        <button class="gait-btn" data-gait="rug_grip">🧗 Agarre</button>
+                        <button class="gait-btn" data-gait="rug_general">🏔️ Rugoso</button>
+                        <button class="gait-btn" data-gait="rug_hstep">🦿 Paso Alto</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CENTER PANEL -->
+        <main class="center-panel">
+            <!-- Video Feed Section -->
+            <div class="video-container">
+                <!-- Video Status Indicator -->
+                <div class="video-status" id="videoStatus">
+                    <span class="video-status-dot stopped" id="videoStatusDot"></span>
+                    <span id="videoStatusText">Detenido</span>
+                </div>
+
+                <!-- Video Element -->
+                <video id="robotVideo" controls muted playsinline></video>
+
+                <!-- Placeholder -->
+                <div class="video-placeholder" id="videoPlaceholder">
+                    <div class="video-placeholder-icon">📹</div>
+                    <div style="margin-bottom: 8px;">Cámara del Robot</div>
+                    <div style="font-size: 12px; color: var(--text-secondary);" id="videoUrlDisplay">
+                        Conectando...
+                    </div>
+                </div>
+
+                <!-- Mode Overlay -->
+                <div class="video-overlay" id="robotModeDisplay">
+                    Modo: POSE
+                </div>
+
+                <!-- Video Controls -->
+                <div class="video-controls">
+                    <button class="btn btn-success btn-small" id="startVideoBtn">
+                        ▶️ Iniciar
+                    </button>
+                    <button class="btn btn-danger btn-small" id="stopVideoBtn" style="display: none;">
+                        ⏹️ Detener
+                    </button>
+                </div>
+            </div>
+
+            <!-- Joysticks -->
+            <div class="joystick-container" id="joysticksContainer" style="display: none;">
+                <div class="joystick-wrapper">
+                    <canvas id="joystickLeft" class="joystick" width="180" height="180"></canvas>
+                    <div class="joystick-label">Traslación</div>
+                </div>
+                <div class="joystick-wrapper">
+                    <canvas id="joystickRight" class="joystick" width="180" height="180"></canvas>
+                    <div class="joystick-label">Rotación</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL -->
+        <aside class="right-panel">
+            <!-- Telemetry Section -->
+            <div class="panel-section">
+                <div class="section-title">
+                    <span>📊 Telemetría</span>
+                </div>
+                <div class="section-content">
+                    <div class="telemetry-grid">
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Velocidad X:</span>
+                            <span class="telemetry-value" id="telemetryVelX">0.00 m/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Velocidad Y:</span>
+                            <span class="telemetry-value" id="telemetryVelY">0.00 m/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Velocidad θ:</span>
+                            <span class="telemetry-value" id="telemetryVelTheta">0.00 rad/s</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Joystick L:</span>
+                            <span class="telemetry-value" id="telemetryJoyL">0, 0</span>
+                        </div>
+                        <div class="telemetry-item">
+                            <span class="telemetry-label">Joystick R:</span>
+                            <span class="telemetry-value" id="telemetryJoyR">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Logs -->
+            <div class="panel-section" style="flex: 1;">
+                <div class="section-title">
+                    <span>📝 Logs</span>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="clearLogs()">Limpiar</button>
+                </div>
+                <div class="log-container" id="logContainer">
+                    <!-- Logs will be added here -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div>
+                <span id="userDisplay">Usuario: --</span> | 
+                <span id="clientIdDisplay">Cliente: --</span>
+            </div>
+            <div>
+                Jueying Lite3 © 2025 Skaler S.A.
+            </div>
+        </footer>
+    </div>
+
+    <!-- EMERGENCY STOP -->
+    <div class="emergency-container" style="display: none;" id="emergencyContainer">
+        <button class="emergency-btn" id="emergencyStopBtn">
+            🛑 PARO DE EMERGENCIA
+        </button>
+    </div>
+
+    <script>
+        // ============================================================================
+        // DYNAMIC URL CONFIGURATION - FIX FOR REMOTE ACCESS
+        // ============================================================================
+        const HOSTNAME = window.location.hostname;
+        const WS_URL = `ws://${HOSTNAME}:8080/`;
+        const HLS_URL = `http://${HOSTNAME}:8888/robot/index.m3u8`;
+        const WEBRTC_URL = `http://${HOSTNAME}:8889/robot/whep`;
+
+        // Log configuration
+        console.log('=== DYNAMIC URL CONFIGURATION ===');
+        console.log('Hostname:', HOSTNAME);
+        console.log('WebSocket URL:', WS_URL);
+        console.log('HLS Stream URL:', HLS_URL);
+        console.log('WebRTC URL:', WEBRTC_URL);
+        console.log('==================================');
+
+        // Update video URL display
+        if (document.getElementById('videoUrlDisplay')) {
+            document.getElementById('videoUrlDisplay').textContent = `HLS: ${HLS_URL}`;
+        }
+
+        // ============================================================================
+        // RESPONSIVE JOYSTICK SIZE ADJUSTMENT
+        // ============================================================================
+        function adjustJoystickSize() {
+            const isMobile = window.innerWidth <= 768;
+            const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+            
+            let size = 180; // Desktop default
+            
+            if (isMobile) {
+                if (isLandscape && window.innerWidth <= 768) {
+                    size = 100; // Móvil landscape
+                } else if (window.innerWidth <= 360) {
+                    size = 100; // Pantallas muy pequeñas
+                } else {
+                    size = 120; // Móvil portrait
+                }
+            }
+            
+            // Actualizar tamaños de canvas
+            const leftJoystick = document.getElementById('joystickLeft');
+            const rightJoystick = document.getElementById('joystickRight');
+            
+            if (leftJoystick && rightJoystick) {
+                leftJoystick.width = size;
+                leftJoystick.height = size;
+                leftJoystick.style.width = size + 'px';
+                leftJoystick.style.height = size + 'px';
+                
+                rightJoystick.width = size;
+                rightJoystick.height = size;
+                rightJoystick.style.width = size + 'px';
+                rightJoystick.style.height = size + 'px';
+                
+                // Actualizar centros y radios máximos
+                joysticks.left.centerX = size / 2;
+                joysticks.left.centerY = size / 2;
+                joysticks.left.maxRadius = (size / 2) - 25;
+                
+                joysticks.right.centerX = size / 2;
+                joysticks.right.centerY = size / 2;
+                joysticks.right.maxRadius = (size / 2) - 25;
+                
+                // Redibujar
+                if (joysticks.left.ctx && joysticks.right.ctx) {
+                    drawJoystick(joysticks.left);
+                    drawJoystick(joysticks.right);
+                }
+            }
+        }
+
+        // Escuchar cambios de tamaño y orientación
+        window.addEventListener('resize', adjustJoystickSize);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(adjustJoystickSize, 100);
+        });
+
+        // ============================================================================
+        // GLOBAL STATE
+        // ============================================================================
+        const state = {
+            ws: null,
+            connected: false,
+            authenticated: false,
+            hasControl: false,
+            token: null,
+            user: null,
+            clientId: null,
+            currentMode: 'pose',
+            currentGait: 'flat_medium',
+            lastPingTime: null,
+            latency: 0,
+            // Control state (NEW)
+            currentController: null, // { username, role }
+            // Video streaming state
+            video: {
+                hls: null,
+                isPlaying: false,
+                retryCount: 0,
+                maxRetries: 5,
+                retryTimeout: null
+            }
+        };
+
+        const joysticks = {
+            left: {
+                canvas: null,
+                ctx: null,
+                active: false,
+                x: 0,
+                y: 0,
+                centerX: 90,
+                centerY: 90,
+                maxRadius: 65
+            },
+            right: {
+                canvas: null,
+                ctx: null,
+                active: false,
+                x: 0,
+                y: 0,
+                centerX: 90,
+                centerY: 90,
+                maxRadius: 65
+            }
+        };
+
+        // ============================================================================
+        // HELPER FUNCTIONS (NEW)
+        // ============================================================================
+        
+        // Show toast notification
+        function showToast(title, message, type = 'info', duration = 4000) {
+            // Remove existing toasts
+            const existingToasts = document.querySelectorAll('.toast-notification');
+            existingToasts.forEach(toast => toast.remove());
+            
+            // Create toast
+            const toast = document.createElement('div');
+            toast.className = `toast-notification toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-notification-title">${title}</div>
+                <div class="toast-notification-message">${message}</div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Show with animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Auto hide
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // Reset joysticks to neutral position
+        function resetJoysticks() {
+            joysticks.left.x = 0;
+            joysticks.left.y = 0;
+            joysticks.left.active = false;
+            
+            joysticks.right.x = 0;
+            joysticks.right.y = 0;
+            joysticks.right.active = false;
+            
+            if (joysticks.left.ctx) drawJoystick(joysticks.left);
+            if (joysticks.right.ctx) drawJoystick(joysticks.right);
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - HLS CONFIGURATION (USING DYNAMIC URL)
+        // ============================================================================
+        const VIDEO_CONFIG = {
+            hlsUrl: HLS_URL,  // Using dynamic URL
+            hlsConfig: {
+                debug: false,
+                enableWorker: true,
+                lowLatencyMode: true,
+                backBufferLength: 90,
+                maxBufferLength: 30,
+                maxMaxBufferLength: 60
+            }
+        };
+
+        // ============================================================================
+        // VIDEO STREAMING - LIVE CATCHUP (AUTO-JUMP TO LIVE IF LAG > 3s)
+        // ============================================================================
+        function setupLiveCatchup(video, hls) {
+            let lastCheckTime = 0;
+            const LAG_THRESHOLD = 3; // seconds
+            const CHECK_INTERVAL = 1000; // ms
+            
+            video.addEventListener('timeupdate', () => {
+                const now = Date.now();
+                
+                // Throttle checks to once per second
+                if (now - lastCheckTime < CHECK_INTERVAL) return;
+                lastCheckTime = now;
+                
+                // Calculate lag (distance from live edge)
+                let lag = 0;
+                
+                if (hls) {
+                    // HLS.js: Check against live edge
+                    const liveSyncPosition = hls.liveSyncPosition;
+                    if (liveSyncPosition !== undefined && video.currentTime > 0) {
+                        lag = liveSyncPosition - video.currentTime;
+                    }
+                } else {
+                    // Native HLS (Safari): Use seekable range
+                    if (video.seekable && video.seekable.length > 0) {
+                        const liveEdge = video.seekable.end(video.seekable.length - 1);
+                        lag = liveEdge - video.currentTime;
+                    }
+                }
+                
+                // If lag > threshold, jump to live
+                if (lag > LAG_THRESHOLD) {
+                    log(`⏩ Video atrasado ${lag.toFixed(1)}s, saltando a live...`, 'info');
+                    
+                    if (hls) {
+                        // HLS.js: Jump to live sync position
+                        video.currentTime = hls.liveSyncPosition;
+                    } else {
+                        // Native HLS: Jump to end of seekable range
+                        if (video.seekable && video.seekable.length > 0) {
+                            video.currentTime = video.seekable.end(video.seekable.length - 1) - 0.5;
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - START
+        // ============================================================================
+        function startVideoStream() {
+            const video = document.getElementById('robotVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            log(`🎥 Iniciando video stream desde ${VIDEO_CONFIG.hlsUrl}...`, 'info');
+            updateVideoStatus('connecting', 'Conectando...');
+            
+            // Check if HLS.js is supported
+            if (Hls.isSupported()) {
+                log('✅ HLS.js soportado', 'info');
+                
+                // Create HLS instance
+                state.video.hls = new Hls(VIDEO_CONFIG.hlsConfig);
+                
+                // Attach media
+                state.video.hls.loadSource(VIDEO_CONFIG.hlsUrl);
+                state.video.hls.attachMedia(video);
+                
+                // Event: Manifest parsed
+                state.video.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    log('✅ Video stream iniciado', 'success');
+                    updateVideoStatus('connected', 'Conectado');
+                    
+                    // Hide placeholder, show video
+                    placeholder.style.display = 'none';
+                    video.classList.add('active');
+                    
+                    // Play video
+                    video.play().catch(err => {
+                        log('⚠️ Auto-play bloqueado, haz click en play', 'warning');
+                        console.warn('Auto-play error:', err);
+                    });
+                    
+                    // Update UI
+                    document.getElementById('startVideoBtn').style.display = 'none';
+                    document.getElementById('stopVideoBtn').style.display = 'flex';
+                    
+                    state.video.isPlaying = true;
+                    state.video.retryCount = 0;
+                    
+                    // Setup live catchup (jump to live if lag > 3s)
+                    setupLiveCatchup(video, state.video.hls);
+                });
+                
+                // Event: Error handling
+                state.video.hls.on(Hls.Events.ERROR, (event, data) => {
+                    console.error('HLS Error:', data);
+                    
+                    if (data.fatal) {
+                        switch(data.type) {
+                            case Hls.ErrorTypes.NETWORK_ERROR:
+                                log('❌ Error de red en video stream', 'error');
+                                handleVideoNetworkError();
+                                break;
+                                
+                            case Hls.ErrorTypes.MEDIA_ERROR:
+                                log('⚠️ Error de medios, intentando recuperar...', 'warning');
+                                state.video.hls.recoverMediaError();
+                                break;
+                                
+                            default:
+                                log('❌ Error fatal en video stream', 'error');
+                                updateVideoStatus('error', 'Error fatal');
+                                stopVideoStream();
+                                break;
+                        }
+                    }
+                });
+                
+                // Event: Level loaded
+                state.video.hls.on(Hls.Events.LEVEL_LOADED, (event, data) => {
+                    // Log video quality info
+                    if (data.details.totalduration) {
+                        const duration = data.details.totalduration.toFixed(1);
+                        log(`📊 Buffer: ${duration}s`, 'info');
+                    }
+                });
+                
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native HLS support (Safari)
+                log('✅ HLS nativo soportado (Safari)', 'info');
+                
+                video.src = VIDEO_CONFIG.hlsUrl;
+                
+                video.addEventListener('loadedmetadata', () => {
+                    log('✅ Video stream iniciado (nativo)', 'success');
+                    updateVideoStatus('connected', 'Conectado');
+                    
+                    placeholder.style.display = 'none';
+                    video.classList.add('active');
+                    
+                    video.play().catch(err => {
+                        log('⚠️ Auto-play bloqueado', 'warning');
+                        console.warn('Auto-play error:', err);
+                    });
+                    
+                    document.getElementById('startVideoBtn').style.display = 'none';
+                    document.getElementById('stopVideoBtn').style.display = 'flex';
+                    
+                    state.video.isPlaying = true;
+                    state.video.retryCount = 0;
+                    
+                    // Setup live catchup for native HLS
+                    setupLiveCatchup(video, null);
+                });
+                
+                video.addEventListener('error', (e) => {
+                    console.error('Native HLS Error:', e);
+                    log('❌ Error en video stream nativo', 'error');
+                    handleVideoNetworkError();
+                });
+                
+            } else {
+                log('❌ HLS no soportado en este navegador', 'error');
+                updateVideoStatus('error', 'No soportado');
+            }
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - STOP
+        // ============================================================================
+        function stopVideoStream() {
+            const video = document.getElementById('robotVideo');
+            const placeholder = document.getElementById('videoPlaceholder');
+            
+            log('⏹️ Video detenido', 'info');
+            
+            // Clear retry timeout
+            if (state.video.retryTimeout) {
+                clearTimeout(state.video.retryTimeout);
+                state.video.retryTimeout = null;
+            }
+            
+            // Destroy HLS instance
+            if (state.video.hls) {
+                state.video.hls.destroy();
+                state.video.hls = null;
+            }
+            
+            // Stop and clear video
+            video.pause();
+            video.src = '';
+            video.load();
+            video.classList.remove('active');
+            
+            // Show placeholder
+            placeholder.style.display = 'flex';
+            
+            // Update UI
+            updateVideoStatus('stopped', 'Detenido');
+            document.getElementById('startVideoBtn').style.display = 'flex';
+            document.getElementById('stopVideoBtn').style.display = 'none';
+            
+            state.video.isPlaying = false;
+            state.video.retryCount = 0;
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - ERROR HANDLING
+        // ============================================================================
+        function handleVideoNetworkError() {
+            if (state.video.retryCount < state.video.maxRetries) {
+                state.video.retryCount++;
+                log(`⏳ Reintentando conexión de video (${state.video.retryCount}/${state.video.maxRetries})...`, 'warning');
+                updateVideoStatus('connecting', `Reintentando (${state.video.retryCount}/${state.video.maxRetries})`);
+                
+                // Retry after 3 seconds
+                state.video.retryTimeout = setTimeout(() => {
+                    if (state.video.hls) {
+                        state.video.hls.startLoad();
+                    } else {
+                        // Restart from scratch
+                        startVideoStream();
+                    }
+                }, 3000);
+                
+            } else {
+                log('❌ Máximo de reintentos alcanzado. Video detenido.', 'error');
+                updateVideoStatus('error', 'Error de conexión');
+                stopVideoStream();
+            }
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - STATUS UPDATE
+        // ============================================================================
+        function updateVideoStatus(status, text) {
+            const dot = document.getElementById('videoStatusDot');
+            const statusText = document.getElementById('videoStatusText');
+            
+            // Remove all status classes
+            dot.className = 'video-status-dot';
+            
+            // Add appropriate class
+            dot.classList.add(status);
+            statusText.textContent = text;
+        }
+
+        // ============================================================================
+        // VIDEO STREAMING - EVENT HANDLERS
+        // ============================================================================
+        document.getElementById('startVideoBtn').addEventListener('click', () => {
+            startVideoStream();
+        });
+
+        document.getElementById('stopVideoBtn').addEventListener('click', () => {
+            stopVideoStream();
+        });
+
+        // ============================================================================
+        // WEBSOCKET CONNECTION (USING DYNAMIC URL)
+        // ============================================================================
+        function connectWebSocket() {
+            log(`Conectando a WebSocket: ${WS_URL}...`, 'info');
+            
+            state.ws = new WebSocket(WS_URL);
+            
+            state.ws.onopen = () => {
+                state.connected = true;
+                updateConnectionStatus('ws', true);
+                log('✅ WebSocket conectado', 'success');
+            };
+            
+            state.ws.onclose = () => {
+                state.connected = false;
+                state.authenticated = false;
+                state.hasControl = false;
+                updateConnectionStatus('ws', false);
+                updateConnectionStatus('udp', false);
+                updateConnectionStatus('ros', false);
+                log('❌ WebSocket desconectado. Reintentando en 3s...', 'error');
+                
+                setTimeout(connectWebSocket, 3000);
+            };
+            
+            state.ws.onerror = (error) => {
+                log('❌ Error WebSocket', 'error');
+                console.error('WebSocket error:', error);
+            };
+            
+            state.ws.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    handleWebSocketMessage(message);
+                } catch (error) {
+                    console.error('Error parsing message:', error);
+                }
+            };
+        }
+
+        // ============================================================================
+        // MESSAGE HANDLER
+        // ============================================================================
+        function handleWebSocketMessage(message) {
+            switch (message.type) {
+                case 'connected':
+                    state.clientId = message.clientId;
+                    document.getElementById('clientIdDisplay').textContent = 
+                        `Cliente: ${state.clientId.substring(0, 12)}...`;
+                    break;
+                
+                case 'auth_success':
+                    state.authenticated = true;
+                    state.token = message.token;
+                    state.user = message.user;
+                    document.getElementById('userDisplay').textContent = 
+                        `Usuario: ${state.user.username} (${state.user.role})`;
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = window.innerWidth <= 768 ? 'flex' : 'grid';
+                    document.getElementById('emergencyContainer').style.display = 'block';
+                    log(`✅ Autenticado como ${state.user.username}`, 'success');
+                    
+                    // Request status
+                    sendMessage({ type: 'status' });
+                    
+                    // Start ping
+                    startPing();
+                    
+                    // AUTO-START VIDEO: Start video stream 2 seconds after authentication
+                    setTimeout(() => {
+                        log('🎥 Iniciando video automáticamente...', 'info');
+                        startVideoStream();
+                    }, 2000);
+                    break;
+                
+                case 'auth_failed':
+                    document.getElementById('loginError').textContent = message.message;
+                    document.getElementById('loginError').style.display = 'block';
+                    log('❌ Autenticación fallida', 'error');
+                    break;
+                
+                case 'control_granted':
+                    state.hasControl = true;
+                    state.currentController = null; // Clear other controller info
+                    updateControlUI(true);
+                    log('✅ Control otorgado', 'success');
+                    break;
+                
+                case 'control_denied':
+                    // Operator tried to take control when another has it
+                    const deniedBy = message.currentUser || 'otro usuario';
+                    const deniedRole = message.currentRole || 'usuario';
+                    
+                    state.currentController = {
+                        username: message.currentUser,
+                        role: message.currentRole
+                    };
+                    
+                    showToast(
+                        '❌ Control Denegado',
+                        `Robot controlado por: ${deniedBy} (${deniedRole})`,
+                        'warning',
+                        5000
+                    );
+                    
+                    updateControlUI(false, state.currentController);
+                    log(`⚠️ Control denegado: ${message.message}`, 'warning');
+                    break;
+                
+                case 'control_lost':
+                    // Admin took control override
+                    const newController = message.newController || 'administrador';
+                    
+                    state.hasControl = false;
+                    state.currentController = {
+                        username: message.newController,
+                        role: 'admin'
+                    };
+                    
+                    // Reset joysticks immediately
+                    resetJoysticks();
+                    
+                    showToast(
+                        '⚠️ Control Perdido',
+                        `${newController} tomó el control del robot`,
+                        'error',
+                        6000
+                    );
+                    
+                    updateControlUI(false, state.currentController);
+                    log(`❌ Control perdido: ${message.message}`, 'error');
+                    break;
+                
+                case 'control_released':
+                    state.hasControl = false;
+                    state.currentController = null;
+                    updateControlUI(false);
+                    log('ℹ️ Control liberado', 'info');
+                    break;
+                
+                case 'control_taken':
+                    if (!state.hasControl) {
+                        log('⚠️ ' + message.message, 'warning');
+                    }
+                    break;
+                
+                case 'control_available':
+                    log('ℹ️ Control disponible', 'info');
+                    break;
+                
+                case 'command_result':
+                    if (message.success) {
+                        log(`✅ Comando ejecutado: ${message.command}`, 'success');
+                    } else {
+                        log(`❌ Comando falló: ${message.command}`, 'error');
+                    }
+                    break;
+                
+                case 'status':
+                    updateStatus(message.data);
+                    break;
+                
+                case 'telemetry':
+                    updateTelemetry(message);
+                    break;
+                
+                case 'ping':
+                    // Backend sent ping, respond with pong
+                    sendMessage({ type: 'pong' });
+                    break;
+                
+                case 'pong':
+                    if (state.lastPingTime) {
+                        state.latency = Date.now() - state.lastPingTime;
+                        document.getElementById('latencyDisplay').textContent = 
+                            `${state.latency}ms`;
+                    }
+                    break;
+                
+                case 'error':
+                    log(`❌ Error: ${message.message}`, 'error');
+                    break;
+            }
+        }
+
+        // ============================================================================
+        // SEND MESSAGE
+        // ============================================================================
+        function sendMessage(message) {
+            if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+                state.ws.send(JSON.stringify(message));
+                return true;
+            }
+            log('❌ No conectado al servidor', 'error');
+            return false;
+        }
+
+        // ============================================================================
+        // LOGIN
+        // ============================================================================
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            document.getElementById('loginError').style.display = 'none';
+            
+            sendMessage({
+                type: 'auth',
+                username,
+                password
+            });
+        });
+
+        // ============================================================================
+        // CONTROL
+        // ============================================================================
+        document.getElementById('controlBtn').addEventListener('click', () => {
+            if (state.hasControl) {
+                sendMessage({ type: 'release_control' });
+            } else {
+                sendMessage({ type: 'request_control' });
+            }
+        });
+
+        function updateControlUI(hasControl, currentController = null) {
+            const btn = document.getElementById('controlBtn');
+            const status = document.getElementById('controlStatus');
+            
+            if (hasControl) {
+                // User HAS control
+                btn.textContent = 'Liberar Control';
+                btn.className = 'btn btn-danger btn-full';
+                status.textContent = 'Tienes el control';
+                status.className = 'status-has-control';
+                status.style.color = 'var(--success)';
+                
+                // Enable action buttons
+                document.querySelectorAll('[data-action], [data-gait]').forEach(btn => {
+                    btn.disabled = false;
+                });
+                
+                // Show joysticks in MOVE mode
+                if (state.currentMode === 'move') {
+                    document.getElementById('joysticksContainer').style.display = 'flex';
+                }
+            } else if (currentController) {
+                // ANOTHER user has control
+                btn.textContent = 'Tomar Control';
+                btn.className = 'btn btn-primary btn-full';
+                status.textContent = `Controlado por: ${currentController.username} (${currentController.role})`;
+                status.className = 'status-other-control';
+                status.style.color = 'var(--warning)';
+                
+                // Disable action buttons
+                document.querySelectorAll('[data-action], [data-gait]').forEach(btn => {
+                    btn.disabled = true;
+                });
+                
+                // Hide joysticks
+                document.getElementById('joysticksContainer').style.display = 'none';
+                
+                // Stop movement
+                stopMovement();
+            } else {
+                // NO ONE has control (or released)
+                btn.textContent = 'Tomar Control';
+                btn.className = 'btn btn-primary btn-full';
+                status.textContent = 'Sin control';
+                status.className = '';
+                status.style.color = 'var(--text-secondary)';
+                
+                // Disable action buttons
+                document.querySelectorAll('[data-action], [data-gait]').forEach(btn => {
+                    btn.disabled = true;
+                });
+                
+                // Hide joysticks
+                document.getElementById('joysticksContainer').style.display = 'none';
+                
+                // Stop movement
+                stopMovement();
+            }
+        }
+
+        // ============================================================================
+        // MODE SWITCHING
+        // ============================================================================
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!state.hasControl) {
+                    log('⚠️ Necesitas tomar control primero', 'warning');
+                    return;
+                }
+                
+                const mode = btn.dataset.mode;
+                
+                sendMessage({
+                    type: 'command',
+                    command: 'set_mode',
+                    data: { mode }
+                });
+                
+                // Update UI
+                state.currentMode = mode;
+                updateModeUI(mode);
+            });
+        });
+
+        function updateModeUI(mode) {
+            // Update mode buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            // Update current mode display
+            document.getElementById('currentMode').textContent = mode.toUpperCase();
+            document.getElementById('robotModeDisplay').textContent = `Modo: ${mode.toUpperCase()}`;
+            
+            // Show/hide sections
+            if (mode === 'pose') {
+                document.getElementById('actionsSection').style.display = 'block';
+                document.getElementById('gaitSection').style.display = 'none';
+                document.getElementById('joysticksContainer').style.display = 'none';
+                stopMovement();
+            } else {
+                document.getElementById('actionsSection').style.display = 'none';
+                document.getElementById('gaitSection').style.display = 'block';
+                if (state.hasControl) {
+                    document.getElementById('joysticksContainer').style.display = 'flex';
+                }
+            }
+        }
+
+        // ============================================================================
+        // ACTIONS (POSE MODE)
+        // ============================================================================
+        document.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!state.hasControl) {
+                    log('⚠️ Necesitas tomar control primero', 'warning');
+                    return;
+                }
+                
+                if (state.currentMode !== 'pose') {
+                    log('⚠️ Las acciones solo funcionan en modo POSE', 'warning');
+                    return;
+                }
+                
+                const action = btn.dataset.action;
+                
+                sendMessage({
+                    type: 'command',
+                    command: action
+                });
+            });
+        });
+
+        // ============================================================================
+        // GAIT SWITCHING (MOVE MODE)
+        // ============================================================================
+        document.querySelectorAll('[data-gait]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!state.hasControl) {
+                    log('⚠️ Necesitas tomar control primero', 'warning');
+                    return;
+                }
+                
+                if (state.currentMode !== 'move') {
+                    log('⚠️ Los gaits solo funcionan en modo MOVE', 'warning');
+                    return;
+                }
+                
+                const gait = btn.dataset.gait;
+                
+                sendMessage({
+                    type: 'command',
+                    command: 'set_gait',
+                    data: { gait }
+                });
+                
+                // Update UI
+                state.currentGait = gait;
+                document.querySelectorAll('[data-gait]').forEach(b => {
+                    b.classList.remove('active');
+                });
+                btn.classList.add('active');
+            });
+        });
+
+        // ============================================================================
+        // EMERGENCY STOP
+        // ============================================================================
+        document.getElementById('emergencyStopBtn').addEventListener('click', () => {
+            if (confirm('¿Estás seguro de activar el PARO DE EMERGENCIA?')) {
+                sendMessage({
+                    type: 'command',
+                    command: 'emergency_stop'
+                });
+                
+                log('🛑 PARO DE EMERGENCIA ACTIVADO', 'error');
+                
+                stopMovement();
+            }
+        });
+
+        // ============================================================================
+        // JOYSTICKS
+        // ============================================================================
+        function initJoysticks() {
+            // Left joystick (translation)
+            joysticks.left.canvas = document.getElementById('joystickLeft');
+            joysticks.left.ctx = joysticks.left.canvas.getContext('2d');
+            
+            // Right joystick (rotation)
+            joysticks.right.canvas = document.getElementById('joystickRight');
+            joysticks.right.ctx = joysticks.right.canvas.getContext('2d');
+            
+            // Setup event listeners
+            setupJoystick(joysticks.left, 'left');
+            setupJoystick(joysticks.right, 'right');
+            
+            // Adjust size for current screen
+            adjustJoystickSize();
+            
+            // Draw initial state
+            drawJoystick(joysticks.left);
+            drawJoystick(joysticks.right);
+        }
+
+        function setupJoystick(joy, side) {
+            const canvas = joy.canvas;
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', (e) => startJoystick(e, joy, side));
+            canvas.addEventListener('mousemove', (e) => moveJoystick(e, joy, side));
+            canvas.addEventListener('mouseup', () => endJoystick(joy, side));
+            canvas.addEventListener('mouseleave', () => endJoystick(joy, side));
+            
+            // Touch events (improved for mobile)
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                startJoystick(touch, joy, side);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                moveJoystick(touch, joy, side);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                endJoystick(joy, side);
+            }, { passive: false });
+            
+            canvas.addEventListener('touchcancel', () => endJoystick(joy, side));
+        }
+
+        function startJoystick(e, joy, side) {
+            if (!state.hasControl || state.currentMode !== 'move') return;
+            
+            joy.active = true;
+            moveJoystick(e, joy, side);
+        }
+
+        function moveJoystick(e, joy, side) {
+            if (!joy.active) return;
+            
+            const rect = joy.canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left - joy.centerX;
+            const y = e.clientY - rect.top - joy.centerY;
+            
+            const distance = Math.sqrt(x * x + y * y);
+            
+            if (distance < joy.maxRadius) {
+                joy.x = x;
+                joy.y = y;
+            } else {
+                const angle = Math.atan2(y, x);
+                joy.x = Math.cos(angle) * joy.maxRadius;
+                joy.y = Math.sin(angle) * joy.maxRadius;
+            }
+            
+            drawJoystick(joy);
+            sendMovementCommand();
+        }
+
+        function endJoystick(joy, side) {
+            if (!joy.active) return;
+            
+            joy.active = false;
+            joy.x = 0;
+            joy.y = 0;
+            
+            drawJoystick(joy);
+            sendMovementCommand();
+        }
+
+        function drawJoystick(joy) {
+            const ctx = joy.ctx;
+            const w = joy.canvas.width;
+            const h = joy.canvas.height;
+            
+            // Clear
+            ctx.clearRect(0, 0, w, h);
+            
+            // Draw base circle
+            ctx.beginPath();
+            ctx.arc(joy.centerX, joy.centerY, joy.maxRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw crosshair
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(joy.centerX, joy.centerY - joy.maxRadius);
+            ctx.lineTo(joy.centerX, joy.centerY + joy.maxRadius);
+            ctx.moveTo(joy.centerX - joy.maxRadius, joy.centerY);
+            ctx.lineTo(joy.centerX + joy.maxRadius, joy.centerY);
+            ctx.stroke();
+            
+            // Draw stick
+            const stickX = joy.centerX + joy.x;
+            const stickY = joy.centerY + joy.y;
+            
+            const stickRadius = w > 120 ? 20 : 15; // Más pequeño en móvil
+            
+            ctx.beginPath();
+            ctx.arc(stickX, stickY, stickRadius, 0, Math.PI * 2);
+            ctx.fillStyle = joy.active ? '#3b82f6' : '#475569';
+            ctx.fill();
+            ctx.strokeStyle = joy.active ? '#2563eb' : '#334155';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw line from center to stick
+            if (joy.active && (joy.x !== 0 || joy.y !== 0)) {
+                ctx.beginPath();
+                ctx.moveTo(joy.centerX, joy.centerY);
+                ctx.lineTo(stickX, stickY);
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function sendMovementCommand() {
+            if (!state.hasControl || state.currentMode !== 'move') return;
+            
+            // Calculate percentages (-100 to 100)
+            const leftX = Math.round((joysticks.left.x / joysticks.left.maxRadius) * 100);
+            const leftY = Math.round((-joysticks.left.y / joysticks.left.maxRadius) * 100); // Invert Y
+            const rightX = Math.round((joysticks.right.x / joysticks.right.maxRadius) * 100);
+            
+            // Update telemetry display
+            document.getElementById('telemetryJoyL').textContent = `${leftX}, ${leftY}`;
+            document.getElementById('telemetryJoyR').textContent = `${rightX}`;
+            
+            // Send command
+            sendMessage({
+                type: 'command',
+                command: 'move',
+                data: {
+                    forward_back: leftY,
+                    left_right: leftX,
+                    rotation: rightX
+                }
+            });
+        }
+
+        function stopMovement() {
+            // Reset joysticks using helper function
+            resetJoysticks();
+            
+            // Send stop command
+            if (state.hasControl && state.currentMode === 'move') {
+                sendMessage({
+                    type: 'command',
+                    command: 'stop'
+                });
+            }
+        }
+
+        // ============================================================================
+        // STATUS UPDATES
+        // ============================================================================
+        function updateConnectionStatus(type, connected) {
+            const element = document.getElementById(`${type}Status`);
+            if (element) {
+                element.className = connected ? 'dot connected' : 'dot disconnected';
+            }
+        }
+
+        function updateStatus(data) {
+            // Update UDP status
+            if (data.udp) {
+                updateConnectionStatus('udp', data.udp.connected);
+                
+                if (data.udp.mode) {
+                    state.currentMode = data.udp.mode;
+                    updateModeUI(data.udp.mode);
+                }
+                
+                if (data.udp.gait) {
+                    state.currentGait = data.udp.gait;
+                    document.querySelectorAll('[data-gait]').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.gait === data.udp.gait);
+                    });
+                }
+            }
+            
+            // Update ROS status
+            if (data.ros) {
+                updateConnectionStatus('ros', data.ros.connected);
+            }
+            
+            // Update control status
+            if (data.control) {
+                state.hasControl = data.control.hasControl;
+                updateControlUI(state.hasControl);
+            }
+        }
+
+        function updateTelemetry(message) {
+            if (message.topic === 'odometry' && message.data) {
+                const twist = message.data.twist.twist;
+                
+                document.getElementById('telemetryVelX').textContent = 
+                    twist.linear.x.toFixed(2) + ' m/s';
+                document.getElementById('telemetryVelY').textContent = 
+                    twist.linear.y.toFixed(2) + ' m/s';
+                document.getElementById('telemetryVelTheta').textContent = 
+                    twist.angular.z.toFixed(2) + ' rad/s';
+            }
+        }
+
+        // ============================================================================
+        // PING
+        // ============================================================================
+        function startPing() {
+            setInterval(() => {
+                if (state.connected && state.authenticated) {
+                    state.lastPingTime = Date.now();
+                    sendMessage({ type: 'ping' });
+                }
+            }, 2000);
+        }
+
+        // ============================================================================
+        // LOGGING
+        // ============================================================================
+        function log(message, type = 'info') {
+            const container = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const time = new Date().toLocaleTimeString('es-CO', { 
+                hour12: false 
+            });
+            
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-message ${type}">${message}</span>
+            `;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+            
+            // Keep only last 50 logs
+            while (container.children.length > 50) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('logContainer').innerHTML = '';
+        }
+
+        // ============================================================================
+        // CLEANUP ON WINDOW CLOSE
+        // ============================================================================
+        window.addEventListener('beforeunload', () => {
+            // Stop video stream
+            if (state.video.isPlaying) {
+                stopVideoStream();
+            }
+            
+            // Release control
+            if (state.hasControl) {
+                sendMessage({ type: 'release_control' });
+            }
+        });
+
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+        function init() {
+            log('Inicializando interfaz...', 'info');
+            log(`Hostname detectado: ${HOSTNAME}`, 'info');
+            log(`Dispositivo: ${window.innerWidth <= 768 ? 'Móvil' : 'Desktop'}`, 'info');
+            
+            // Initialize joysticks
+            initJoysticks();
+            
+            // Connect WebSocket
+            connectWebSocket();
+            
+            // Request status every 5 seconds
+            setInterval(() => {
+                if (state.connected && state.authenticated) {
+                    sendMessage({ type: 'status' });
+                }
+            }, 5000);
+        }
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html>

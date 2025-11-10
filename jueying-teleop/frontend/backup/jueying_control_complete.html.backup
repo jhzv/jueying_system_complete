@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Jueying Lite3 - Control Avanzado v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+            gap: 10px;
+            padding: 10px;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-section {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 0.9em;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-connected { background: #4CAF50; }
+        .status-disconnected { background: #f44336; }
+        .status-warning { background: #ff9800; }
+
+        .panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auth-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-primary:hover { background: #45a049; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-danger:hover { background: #da190b; }
+        .btn-warning { background: #ff9800; color: white; }
+        .btn-warning:hover { background: #e68900; }
+        .btn-info { background: #2196F3; color: white; }
+        .btn-info:hover { background: #0b7dda; }
+        .btn-lab { background: #9C27B0; color: white; }
+        .btn-lab:hover { background: #7B1FA2; }
+        .btn-active { 
+            background: #4CAF50 !important; 
+            box-shadow: 0 0 10px #4CAF50;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #555;
+            box-shadow: none;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .function-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .main-content {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .joystick-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 15px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            touch-action: none;
+        }
+
+        .joystick {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            touch-action: none;
+            pointer-events: auto;
+        }
+
+        .joystick:active {
+            cursor: grabbing;
+            background: #45a049;
+        }
+
+        .control-mode-indicator {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .telemetry-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .telemetry-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .telemetry-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .badge-active { background: #4CAF50; }
+        .badge-inactive { background: #666; }
+        .badge-lab { background: #9C27B0; }
+
+        .log-section {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            margin-top: 15px;
+        }
+
+        .log-entry {
+            margin-bottom: 3px;
+        }
+
+        .log-info { color: #4CAF50; }
+        .log-warning { color: #ff9800; }
+        .log-error { color: #f44336; }
+        .log-system { color: #2196F3; }
+
+        .footer {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .video-preview {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9em;
+        }
+
+        .function-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .function-list div {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h2>🤖 Jueying Lite3 - Control Avanzado v2.0</h2>
+                <small>Sistema de Teleoperación Remota - Skaler S.A.</small>
+            </div>
+            <div class="status-section">
+                <div class="status-indicator">
+                    <div class="status-dot status-disconnected" id="wsStatus"></div>
+                    <span id="wsText">WebSocket: OFF</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-disconnected" id="rosStatus"></div>
+                    <span id="rosText">ROS: OFF</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-disconnected" id="authStatus"></div>
+                    <span id="authText">Auth: NO</span>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot status-disconnected" id="controlStatus"></div>
+                    <span id="controlText">Control: NO</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Panel Izquierdo: Autenticación y Control -->
+        <aside class="panel">
+            <div class="auth-section" id="authSection">
+                <div class="section-title">🔐 Autenticación</div>
+                <div class="input-group">
+                    <label>Usuario:</label>
+                    <input type="text" id="username" placeholder="operator1 / admin" value="operator1">
+                </div>
+                <div class="input-group">
+                    <label>Contraseña:</label>
+                    <input type="password" id="password" placeholder="password123" value="password123">
+                </div>
+                <button class="btn btn-primary" onclick="authenticate()">Iniciar Sesión</button>
+            </div>
+
+            <div class="function-card" id="controlSection" style="display:none;">
+                <div class="section-title">⚡ Control de Sesión</div>
+                <button class="btn btn-primary" id="requestControlBtn" onclick="requestControl()">
+                    🎮 Solicitar Control
+                </button>
+                <button class="btn btn-warning" id="releaseControlBtn" onclick="releaseControl()" disabled>
+                    🚪 Liberar Control
+                </button>
+            </div>
+
+            <div class="function-card" id="commandSection" style="display:none;">
+                <div class="section-title">🎯 Comandos Básicos</div>
+                <button class="btn btn-primary" onclick="sendStandCommand()" disabled id="standBtn">
+                    ⬆️ Stand Up
+                </button>
+                <button class="btn btn-warning" onclick="sendSitCommand()" disabled id="sitBtn">
+                    ⬇️ Sit Down
+                </button>
+                <button class="btn btn-danger" onclick="sendEmergencyStop()">
+                    🛑 EMERGENCY STOP
+                </button>
+            </div>
+
+            <div class="function-card" id="modeSection" style="display:none;">
+                <div class="section-title">🎯 Modo de Operación</div>
+                <div class="control-grid">
+                    <button class="btn btn-info" onclick="setMode('move')" id="moveBtn" disabled>
+                        🚶 Move Mode
+                    </button>
+                    <button class="btn btn-info" onclick="setMode('pose')" id="poseBtn" disabled>
+                        🎭 Pose Mode
+                    </button>
+                </div>
+            </div>
+
+            <div class="function-card" id="gaitOptions" style="display: none;">
+                <div class="section-title">🏃 Opciones Move Mode</div>
+                <small style="opacity: 0.7; display: block; margin-bottom: 8px;">
+                    * El robot debe estar de pie primero
+                </small>
+                
+                <div class="section-title" style="font-size: 0.95em; margin-top: 10px;">Gait Type:</div>
+                <div class="control-grid">
+                    <button class="btn btn-info" onclick="setGaitType('flat')" id="flatBtn" disabled>
+                        🏃 Flat
+                    </button>
+                    <button class="btn btn-warning" onclick="setGaitType('rug')" id="rugBtn" disabled>
+                        🏔️ RUG
+                    </button>
+                </div>
+
+                <div id="flatOptions" style="display: none; margin-top: 15px;">
+                    <div class="section-title" style="font-size: 0.9em;">Body Height:</div>
+                    <div class="control-grid">
+                        <button class="btn btn-info" onclick="setBodyHeight('nrm')" disabled id="nrmBtn">
+                            ↕️ NRM
+                        </button>
+                        <button class="btn btn-info" onclick="setBodyHeight('crawl')" disabled id="crawlBtn">
+                            ⬇️ Crawl
+                        </button>
+                    </div>
+                    
+                    <div class="section-title" style="font-size: 0.9em; margin-top: 10px;">Velocity:</div>
+                    <div class="control-grid">
+                        <button class="btn btn-info" onclick="setVelocity('slow')" disabled id="slowBtn">
+                            🐌 Slow
+                        </button>
+                        <button class="btn btn-info" onclick="setVelocity('medium')" disabled id="mediumBtn">
+                            🚶 Medium
+                        </button>
+                    </div>
+                    <button class="btn btn-info" onclick="setVelocity('fast')" disabled id="fastBtn" style="margin-top: 5px;">
+                        🏃 Fast
+                    </button>
+                </div>
+
+                <div id="rugOptions" style="display: none; margin-top: 15px;">
+                    <div class="section-title" style="font-size: 0.9em;">RUG Gait:</div>
+                    <button class="btn btn-info" onclick="setRugGait('general')" disabled id="generalBtn" style="margin-bottom: 5px;">
+                        🚶 General (≤12cm, ≤30°)
+                    </button>
+                    <button class="btn btn-info" onclick="setRugGait('grip')" disabled id="gripBtn" style="margin-bottom: 5px;">
+                        ⛰️ Grip (≤40°)
+                    </button>
+                    <button class="btn btn-info" onclick="setRugGait('hstep')" disabled id="hstepBtn">
+                        🔶 H-Step (≤15cm)
+                    </button>
+                </div>
+            </div>
+
+            <div class="function-card" id="poseOptions" style="display: none;">
+                <div class="section-title">🎭 Acciones en Pose Mode</div>
+                <div class="pose-selector">
+                    <select id="poseSelect" class="input-group" disabled onchange="executePose()">
+                        <option value="">-- Seleccionar Pose --</option>
+                        <option value="stand">Stand (Parado)</option>
+                        <option value="sit">Sit (Sentado)</option>
+                        <option value="laydown">Lay Down (Acostado)</option>
+                        <option value="dance">Dance (Bailar)</option>
+                        <option value="stretch">Stretch (Estirarse)</option>
+                        <option value="shake">Shake Hands (Dar la mano)</option>
+                        <option value="jump">Long Jump (Salto largo)</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Panel Central: Control de Movimiento -->
+        <main class="main-content">
+            <div class="function-card">
+                <div class="section-title">🕹️ Control de Movimiento</div>
+                <div class="joystick-container" id="joystickContainer">
+                    <div class="joystick" id="joystick"></div>
+                </div>
+                <div class="control-mode-indicator">
+                    Mover: Arriba/Abajo | Rotar: Izq/Der
+                </div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="linearX">0.00</div>
+                        <div class="telemetry-label">Linear (m/s)</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="angularZ">0.00</div>
+                        <div class="telemetry-label">Angular (rad/s)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="function-card">
+                <div class="section-title">📊 Estado del Robot</div>
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="robotMode">--</div>
+                        <div class="telemetry-label">Modo Actual</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="currentGait">--</div>
+                        <div class="telemetry-label">Gait Activo</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="batteryLevel">--</div>
+                        <div class="telemetry-label">Batería (%)</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="robotState">--</div>
+                        <div class="telemetry-label">Estado</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Panel Derecho: Funciones Avanzadas -->
+        <aside class="panel">
+            <div class="function-card">
+                <div class="section-title">🔬 Modo Laboratorio
+                    <span class="badge badge-lab" id="labBadge">INACTIVO</span>
+                </div>
+                <button class="btn btn-lab" onclick="toggleLabMode()" disabled id="labModeBtn">
+                    🧪 Activar Modo Lab
+                </button>
+                <div id="labFeatures" style="display: none; margin-top: 10px;">
+                    <small style="opacity: 0.8; display: block; margin-bottom: 8px;">
+                        Funciones de desarrollo y prueba
+                    </small>
+                    <button class="btn btn-info" onclick="sendLabCommand('calibrate')">
+                        🔧 Calibrar Sensores
+                    </button>
+                    <button class="btn btn-info" onclick="sendLabCommand('test_motors')">
+                        ⚙️ Test Motores
+                    </button>
+                    <button class="btn btn-info" onclick="sendLabCommand('reset_odometry')">
+                        🔄 Reset Odometría
+                    </button>
+                </div>
+            </div>
+
+            <div class="function-card">
+                <div class="section-title">📹 Control de Video</div>
+                <div class="video-controls">
+                    <button class="btn btn-primary" onclick="toggleVideo('wide')" disabled id="wideVideoBtn">
+                        📷 Wide Angle
+                    </button>
+                    <button class="btn btn-primary" onclick="toggleVideo('depth')" disabled id="depthVideoBtn">
+                        🎯 Depth
+                    </button>
+                </div>
+                <div class="video-preview" id="videoPreview">
+                    Video Stream OFF
+                </div>
+            </div>
+
+            <div class="function-card">
+                <div class="section-title">📋 Funciones Disponibles</div>
+                <div class="function-list">
+                    <div>✅ Teleoperación remota</div>
+                    <div>✅ Control unificado joystick</div>
+                    <div>✅ Control de velocidad</div>
+                    <div>✅ Cambio de gaits</div>
+                    <div>✅ Poses predefinidas</div>
+                    <div>✅ Stream de video</div>
+                    <div>✅ Modo laboratorio</div>
+                    <div>✅ Parada de emergencia</div>
+                </div>
+            </div>
+
+            <div class="log-section" id="messageLog"></div>
+        </aside>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div>© 2025 Skaler S.A. - UAO Ingeniería Mecatrónica</div>
+            <div>Jhosep Amaury Zapata Varela</div>
+            <div id="footerStats">Sistema listo</div>
+        </footer>
+    </div>
+
+    <script>
+        // --- Variables Globales ---
+        let ws = null;
+        let token = null;
+        let refreshToken = null;
+        let isAuthenticated = false;
+        let hasControl = false;
+        let dragging = false;
+        let lastJoystickPosition = { linear: 0, angular: 0 };
+        let joystickInterval = null;
+        let labModeActive = false;
+        let videoStreams = { wide: false, depth: false };
+
+        const config = {
+            wsUrl: 'ws://localhost:8080',
+            apiUrl: 'http://localhost:8080/api'
+        };
+
+        let robotState = {
+            mode: 'unknown',
+            gaitType: 'none',
+            bodyHeight: 'nrm',
+            velocity: 'medium',
+            rugGait: 'none',
+            standing: false,
+            battery: 0
+        };
+
+        // --- Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeJoystick();
+            logMessage('system', 'Sistema iniciado. Ingresa credenciales para conectar.');
+            document.addEventListener('keydown', handleKeyboard);
+            document.addEventListener('keyup', handleKeyboardRelease);
+        });
+        
+        // --- Autenticación ---
+        async function authenticate() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                logMessage('error', 'Ingresa usuario y contraseña');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${config.apiUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    token = data.accessToken;
+                    refreshToken = data.refreshToken;
+                    isAuthenticated = true;
+                    
+                    updateAuthStatus(true, username);
+                    logMessage('info', `Autenticado como ${username} (${data.user.role})`);
+                    
+                    document.getElementById('authSection').style.display = 'none';
+                    document.getElementById('controlSection').style.display = 'block';
+                    document.getElementById('commandSection').style.display = 'block';
+                    document.getElementById('modeSection').style.display = 'block';
+                    
+                    connectToServer();
+                } else {
+                    logMessage('error', 'Credenciales inválidas');
+                }
+            } catch (error) {
+                logMessage('error', `Error de autenticación: ${error.message}`);
+            }
+        }
+
+        // --- Conexión WebSocket ---
+        function connectToServer() {
+            ws = new WebSocket(config.wsUrl);
+            
+            ws.onopen = () => {
+                updateConnectionStatus(true);
+                logMessage('info', 'Conectado al servidor WebSocket');
+                ws.send(JSON.stringify({ type: 'auth', token: token }));
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onclose = () => {
+                updateConnectionStatus(false);
+                logMessage('warning', 'Desconectado. Reintentando en 3s...');
+                setTimeout(connectToServer, 3000);
+            };
+
+            ws.onerror = () => {
+                logMessage('error', 'Error de WebSocket');
+                updateConnectionStatus(false);
+            };
+        }
+
+        function handleMessage(msg) {
+            logMessage('system', `Mensaje: ${msg.type}`);
+            
+            switch(msg.type) {
+                case 'auth_success':
+                    logMessage('info', 'WebSocket autenticado correctamente');
+                    break;
+                case 'ros_connection':
+                    updateRosStatus(msg.connected);
+                    break;
+                case 'control_granted':
+                    hasControl = true;
+                    updateControlStatus(true);
+                    logMessage('info', '✅ Control del robot otorgado');
+                    enableControls(true);
+                    break;
+                case 'control_denied':
+                    logMessage('warning', `⚠️ Control denegado: ${msg.reason}`);
+                    break;
+                case 'control_released':
+                    hasControl = false;
+                    updateControlStatus(false);
+                    logMessage('warning', 'Control liberado');
+                    enableControls(false);
+                    break;
+                case 'control_available':
+                    logMessage('info', 'Control disponible');
+                    break;
+                case 'ros_data':
+                    updateRobotState(msg);
+                    break;
+            }
+        }
+
+        // --- Control del Robot ---
+        function requestControl() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'control_request', action: 'request' }));
+                logMessage('info', 'Solicitando control...');
+            }
+        }
+
+        function releaseControl() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                sendVelocity(0, 0);
+                ws.send(JSON.stringify({ type: 'control_request', action: 'release' }));
+            }
+        }
+
+        function sendROSCommand(topic, msgType, msg) {
+            if (!hasControl) {
+                logMessage('warning', 'Necesitas control para enviar comandos');
+                return;
+            }
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'ros_command',
+                    topic: topic,
+                    msgType: msgType,
+                    msg: msg
+                }));
+                logMessage('info', `Comando enviado: ${topic} -> ${JSON.stringify(msg)}`);
+            }
+        }
+
+        function sendStandCommand() {
+            sendROSCommand('/pose_cmd', 'std_msgs/String', { data: 'stand' });
+            // Simulación de respuesta del robot
+            setTimeout(() => {
+                robotState.standing = true;
+                updateUIBasedOnState();
+            }, 2500);
+        }
+
+        function sendSitCommand() {
+            sendROSCommand('/pose_cmd', 'std_msgs/String', { data: 'sit' });
+            robotState.standing = false;
+            robotState.mode = 'unknown';
+            updateUIBasedOnState();
+        }
+
+        function sendEmergencyStop() {
+            sendVelocity(0, 0);
+            sendROSCommand('/emergency_stop', 'std_msgs/Bool', { data: true });
+            logMessage('error', '⚠️ PARADA DE EMERGENCIA ENVIADA ⚠️');
+        }
+
+        function setMode(mode) {
+            if (!robotState.standing) {
+                logMessage('warning', `El robot debe estar de pie para entrar en modo '${mode}'.`);
+                return;
+            }
+            robotState.mode = mode;
+            sendROSCommand('/motion_mode', 'std_msgs/String', { data: mode });
+            updateUIBasedOnState();
+        }
+
+        function setGaitType(type) {
+            if (robotState.mode !== 'move') {
+                logMessage('warning', "Primero selecciona 'Move Mode'.");
+                return;
+            }
+            robotState.gaitType = type;
+            sendROSCommand('/gait_cmd', 'std_msgs/String', { data: type });
+            updateUIBasedOnState();
+            // Default selections
+            if(type === 'flat') setBodyHeight('nrm');
+            if(type === 'rug') setRugGait('general');
+        }
+
+        function setBodyHeight(height) {
+            robotState.bodyHeight = height;
+            sendROSCommand('/body_height', 'std_msgs/String', { data: height });
+            updateUIBasedOnState();
+            if (height === 'nrm') setVelocity('medium');
+        }
+
+        function setVelocity(vel) {
+            robotState.velocity = vel;
+            sendROSCommand('/velocity_setting', 'std_msgs/String', { data: vel });
+            updateUIBasedOnState();
+        }
+
+        function setRugGait(gait) {
+            robotState.rugGait = gait;
+            sendROSCommand('/rug_gait', 'std_msgs/String', { data: gait });
+            updateUIBasedOnState();
+        }
+
+        function executePose() {
+            const pose = document.getElementById('poseSelect').value;
+            if (pose) sendROSCommand('/pose_cmd', 'std_msgs/String', { data: pose });
+        }
+
+        function sendVelocity(linear, angular) {
+            if (!hasControl) return;
+            
+            sendROSCommand('/cmd_vel', 'geometry_msgs/Twist', {
+                linear: { x: linear, y: 0, z: 0 },
+                angular: { x: 0, y: 0, z: angular }
+            });
+            
+            document.getElementById('linearX').textContent = linear.toFixed(2);
+            document.getElementById('angularZ').textContent = angular.toFixed(2);
+        }
+
+        // --- Joystick ---
+        function initializeJoystick() {
+            const container = document.getElementById('joystickContainer');
+            const joystick = document.getElementById('joystick');
+            const radius = 100;
+
+            function handleStart(e) {
+                if (!hasControl || robotState.mode !== 'move') {
+                    if (hasControl && robotState.mode !== 'move') {
+                        logMessage('warning', "Activa 'Move Mode' para usar el joystick");
+                    }
+                    return;
+                }
+                dragging = true;
+                joystick.style.transition = 'none';
+                
+                // Iniciar envío continuo SOLO cuando se presiona
+                joystickInterval = setInterval(() => {
+                    if (hasControl && robotState.mode === 'move' && dragging) {
+                        sendVelocity(lastJoystickPosition.linear, lastJoystickPosition.angular);
+                    }
+                }, 50);
+            }
+
+            function handleEnd() {
+                if (!dragging) return;
+                dragging = false;
+                joystick.style.transition = '0.2s ease-out';
+                joystick.style.left = '50%';
+                joystick.style.top = '50%';
+                lastJoystickPosition = { linear: 0, angular: 0 };
+                sendVelocity(0, 0);
+                
+                // DETENER envío continuo cuando se suelta
+                if (joystickInterval) {
+                    clearInterval(joystickInterval);
+                    joystickInterval = null;
+                }
+            }
+
+            function handleMove(e) {
+                if (!dragging) return;
+                e.preventDefault();
+                
+                const rect = container.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                let x = clientX - rect.left - radius;
+                let y = clientY - rect.top - radius;
+
+                const dist = Math.sqrt(x * x + y * y);
+                if (dist > 80) {
+                    x = (x / dist) * 80;
+                    y = (y / dist) * 80;
+                }
+
+                joystick.style.left = `${radius + x}px`;
+                joystick.style.top = `${radius + y}px`;
+
+                const linear = -y / 80;
+                const angular = x / 80;
+                
+                lastJoystickPosition = { linear, angular };
+                sendVelocity(linear, angular);
+            }
+
+            container.addEventListener('mousedown', handleStart);
+            document.addEventListener('mouseup', handleEnd);
+            document.addEventListener('mousemove', handleMove);
+            container.addEventListener('touchstart', handleStart, { passive: false });
+            document.addEventListener('touchend', handleEnd);
+            document.addEventListener('touchmove', handleMove, { passive: false });
+        }
+
+        // --- Teclado ---
+        const keys = new Set();
+        function handleKeyboard(e) {
+            if (!hasControl || robotState.mode !== 'move') return;
+            keys.add(e.key.toLowerCase());
+            updateFromKeys();
+        }
+        
+        function handleKeyboardRelease(e) {
+            keys.delete(e.key.toLowerCase());
+            if(keys.size === 0) updateFromKeys();
+        }
+        
+        function updateFromKeys() {
+            let lin = 0, ang = 0;
+            if (keys.has('w')) lin = 1;
+            if (keys.has('s')) lin = -1;
+            if (keys.has('a')) ang = 1;
+            if (keys.has('d')) ang = -1;
+            if (keys.has(' ')) { sendEmergencyStop(); return; }
+            sendVelocity(lin, ang);
+        }
+
+        // --- Heartbeat ---
+        setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'heartbeat' }));
+            }
+        }, 5000);
+
+        // --- UI Updates ---
+        function updateUIBasedOnState() {
+            // Estado del robot
+            document.getElementById('robotState').textContent = robotState.standing ? "De Pie" : "Sentado";
+            document.getElementById('robotMode').textContent = robotState.mode === 'unknown' ? '--' : robotState.mode;
+            document.getElementById('currentGait').textContent = robotState.gaitType === 'none' ? '--' : robotState.gaitType.toUpperCase();
+
+            // Botones de comando básico
+            document.getElementById('standBtn').disabled = !hasControl || robotState.standing;
+            document.getElementById('sitBtn').disabled = !hasControl || !robotState.standing;
+
+            // Botones de Modo
+            document.getElementById('moveBtn').disabled = !hasControl || !robotState.standing;
+            document.getElementById('poseBtn').disabled = !hasControl || !robotState.standing;
+            document.getElementById('moveBtn').classList.toggle('btn-active', robotState.mode === 'move');
+            document.getElementById('poseBtn').classList.toggle('btn-active', robotState.mode === 'pose');
+            
+            // Opciones de modo
+            document.getElementById('gaitOptions').style.display = (robotState.mode === 'move') ? 'block' : 'none';
+            document.getElementById('poseOptions').style.display = (robotState.mode === 'pose') ? 'block' : 'none';
+            document.getElementById('poseSelect').disabled = !hasControl;
+
+            // Opciones de Gait
+            const enableGaits = hasControl && robotState.mode === 'move';
+            document.getElementById('flatBtn').disabled = !enableGaits;
+            document.getElementById('rugBtn').disabled = !enableGaits;
+            document.getElementById('flatBtn').classList.toggle('btn-active', robotState.gaitType === 'flat');
+            document.getElementById('rugBtn').classList.toggle('btn-active', robotState.gaitType === 'rug');
+
+            // Sub-opciones de Flat
+            document.getElementById('flatOptions').style.display = enableGaits && robotState.gaitType === 'flat' ? 'block' : 'none';
+            if (enableGaits && robotState.gaitType === 'flat') {
+                document.getElementById('nrmBtn').disabled = false;
+                document.getElementById('crawlBtn').disabled = false;
+                document.getElementById('nrmBtn').classList.toggle('btn-active', robotState.bodyHeight === 'nrm');
+                document.getElementById('crawlBtn').classList.toggle('btn-active', robotState.bodyHeight === 'crawl');
+
+                const enableVelocity = robotState.bodyHeight === 'nrm';
+                ['slowBtn', 'mediumBtn', 'fastBtn'].forEach(id => document.getElementById(id).disabled = !enableVelocity);
+                if (enableVelocity) {
+                    ['slowBtn', 'mediumBtn', 'fastBtn'].forEach(id => document.getElementById(id).classList.remove('btn-active'));
+                    document.getElementById(robotState.velocity + 'Btn').classList.add('btn-active');
+                }
+            }
+            
+            // Sub-opciones de RUG
+            document.getElementById('rugOptions').style.display = enableGaits && robotState.gaitType === 'rug' ? 'block' : 'none';
+            if (enableGaits && robotState.gaitType === 'rug') {
+                ['generalBtn', 'gripBtn', 'hstepBtn'].forEach(id => document.getElementById(id).disabled = false);
+                ['generalBtn', 'gripBtn', 'hstepBtn'].forEach(id => document.getElementById(id).classList.remove('btn-active'));
+                document.getElementById(robotState.rugGait + 'Btn').classList.add('btn-active');
+            }
+        }
+
+        function updateConnectionStatus(connected) {
+            document.getElementById('wsStatus').className = 'status-dot ' + (connected ? 'status-connected' : 'status-disconnected');
+            document.getElementById('wsText').textContent = connected ? 'WebSocket: ON' : 'WebSocket: OFF';
+        }
+
+        function updateAuthStatus(authenticated, username = 'NO') {
+            document.getElementById('authStatus').className = 'status-dot ' + (authenticated ? 'status-connected' : 'status-disconnected');
+            document.getElementById('authText').textContent = 'Auth: ' + username;
+        }
+
+        function updateControlStatus(active) {
+            document.getElementById('controlStatus').className = 'status-dot ' + (active ? 'status-connected' : 'status-disconnected');
+            document.getElementById('controlText').textContent = active ? 'Control: YES' : 'Control: NO';
+            document.getElementById('releaseControlBtn').disabled = !active;
+            document.getElementById('requestControlBtn').disabled = active;
+            
+            // Habilitar controles principales
+            ['labModeBtn', 'wideVideoBtn', 'depthVideoBtn'].forEach(id => document.getElementById(id).disabled = !active);
+            updateUIBasedOnState();
+        }
+
+        function updateRosStatus(connected) {
+            document.getElementById('rosStatus').className = 'status-dot ' + (connected ? 'status-connected' : 'status-disconnected');
+            document.getElementById('rosText').textContent = connected ? 'ROS: ON' : 'ROS: OFF';
+        }
+
+        function enableControls(enabled) {
+            document.getElementById('standBtn').disabled = !enabled;
+            document.getElementById('sitBtn').disabled = !enabled;
+            updateUIBasedOnState();
+        }
+
+        function updateRobotState(data) {
+            // Aquí procesarías los datos reales de ROS que llegan del servidor
+            if (data.topic === '/battery_state') {
+                robotState.battery = Math.round((data.msg.percentage || 0) * 100);
+                document.getElementById('batteryLevel').textContent = `${robotState.battery}%`;
+            }
+            // Agregar más procesamiento de datos ROS según necesidades
+        }
+
+        // --- Funciones Adicionales (Lab, Video) ---
+        function toggleLabMode() {
+            if (!hasControl) {
+                logMessage('warning', 'Necesitas control para activar modo laboratorio');
+                return;
+            }
+            labModeActive = !labModeActive;
+            document.getElementById('labFeatures').style.display = labModeActive ? 'block' : 'none';
+            document.getElementById('labBadge').textContent = labModeActive ? 'ACTIVO' : 'INACTIVO';
+            document.getElementById('labBadge').className = labModeActive ? 'badge badge-active' : 'badge badge-lab';
+            logMessage('info', `Modo laboratorio ${labModeActive ? 'activado' : 'desactivado'}.`);
+        }
+
+        function sendLabCommand(cmd) {
+            if (!labModeActive) {
+                logMessage('warning', 'Activa modo laboratorio primero');
+                return;
+            }
+            sendROSCommand('/lab_cmd', 'std_msgs/String', { data: cmd });
+        }
+
+        function toggleVideo(type) {
+            if (!hasControl) {
+                logMessage('warning', 'Necesitas control para activar video');
+                return;
+            }
+            videoStreams[type] = !videoStreams[type];
+            const btn = document.getElementById(`${type}VideoBtn`);
+            btn.classList.toggle('btn-active', videoStreams[type]);
+            sendROSCommand('/camera_control', 'std_msgs/String', { 
+                data: JSON.stringify({ camera: type, enabled: videoStreams[type] }) 
+            });
+            
+            const anyStreamActive = Object.values(videoStreams).some(v => v);
+            document.getElementById('videoPreview').textContent = anyStreamActive ? 'Video Stream ON' : 'Video Stream OFF';
+            logMessage('info', `Video ${type}: ${videoStreams[type] ? 'ON' : 'OFF'}`);
+        }
+
+        function logMessage(type, message) {
+            const log = document.getElementById('messageLog');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // --- Limpieza ---
+        window.addEventListener('beforeunload', () => {
+            if (hasControl) releaseControl();
+            if (ws) ws.close();
+            if (joystickInterval) clearInterval(joystickInterval);
+        });
+    </script>
+</body>
+</html>

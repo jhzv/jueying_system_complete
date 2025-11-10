@@ -1,0 +1,15 @@
+2025-10-16 08:21:56 [INFO]: ============================================================
+2025-10-16 08:21:56 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-10-16 08:21:56 [INFO]: ============================================================
+2025-10-16 08:21:56 [INFO]: [UDP] Initializing client...
+2025-10-16 08:21:56 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-10-16 08:21:56 [INFO]: [UDP] Heartbeat started (250ms)
+2025-10-16 08:21:56 [ERROR]: [UDP] Invalid mode: pose
+2025-10-16 08:21:56 [INFO]: [UDP] Client initialized
+2025-10-16 08:21:56 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-10-16 08:21:57 [INFO]: [ROS] Connected to rosbridge
+2025-10-16 08:21:57 [INFO]: [ROS] Subscribed to telemetry topics
+2025-10-16 08:21:57 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-10-16 08:21:57 [INFO]: [SERVER] Ready to accept connections
+2025-10-16 08:21:57 [INFO]: ============================================================
+2025-10-16 08:30:04 [INFO]: [SERVER] Shutting down...

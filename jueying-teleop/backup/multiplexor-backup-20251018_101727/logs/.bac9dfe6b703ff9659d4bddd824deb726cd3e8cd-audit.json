@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/ysc/jueying-teleop/multiplexor/multiplexor-v2.1-hybrid/logs/.bac9dfe6b703ff9659d4bddd824deb726cd3e8cd-audit.json",
+    "files": [
+        {
+            "date": 1760574116758,
+            "name": "/home/ysc/jueying-teleop/multiplexor/multiplexor-v2.1-hybrid/logs/multiplexor-2025-10-16.log",
+            "hash": "dfa9f0e81ee453cbebee5a0a33a306b882164296f7356fcc50bb3691f2216e4a"
+        },
+        {
+            "date": 1760751248861,
+            "name": "/home/ysc/jueying-teleop/multiplexor/multiplexor-v2.1-hybrid/logs/multiplexor-2025-10-18.log",
+            "hash": "d245c5fe3a1dc2305d395cec6e1679bcaf6ed55687e86d990cc63a9a1bbe7c65"
+        }
+    ],
+    "hashType": "sha256"
+}

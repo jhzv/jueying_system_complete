@@ -1,0 +1,150 @@
+2025-11-08 11:41:07 [INFO]: ============================================================
+2025-11-08 11:41:07 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 11:41:07 [INFO]: ============================================================
+2025-11-08 11:41:07 [INFO]: [UDP] Initializing client...
+2025-11-08 11:41:07 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 11:41:07 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 11:41:07 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 11:41:07 [INFO]: [UDP] Client initialized
+2025-11-08 11:41:07 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 11:41:07 [INFO]: [ROS] Connected to rosbridge
+2025-11-08 11:41:07 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-08 11:41:07 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-08 11:41:07 [INFO]: [SERVER] Ready to accept connections
+2025-11-08 11:41:07 [INFO]: ============================================================
+2025-11-08 11:41:32 [INFO]: [WS] New connection: client_1762573292402_msnggo93u from ::ffff:192.168.1.103
+2025-11-08 11:41:39 [INFO]: [AUTH] Login attempt: operator1
+2025-11-08 11:41:39 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-11-08 11:42:13 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-08 11:42:25 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:42:37 [INFO]: [UDP] Mode changed to: move
+2025-11-08 11:42:55 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 11:42:58 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:43:04 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-08 11:43:04 [INFO]: [CONTROL] Control released by: operator1
+2025-11-08 11:43:12 [INFO]: [WS] Client disconnected: client_1762573292402_msnggo93u
+2025-11-08 11:43:28 [WARN]: [ROS] Connection closed. Attempting reconnect...
+2025-11-08 11:43:28 [INFO]: [SERVER] Shutting down...
+2025-11-08 11:44:09 [INFO]: ============================================================
+2025-11-08 11:44:09 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 11:44:09 [INFO]: ============================================================
+2025-11-08 11:44:09 [INFO]: [UDP] Initializing client...
+2025-11-08 11:44:09 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 11:44:09 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 11:44:09 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 11:44:09 [INFO]: [UDP] Client initialized
+2025-11-08 11:44:09 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 11:44:09 [INFO]: [ROS] Connected to rosbridge
+2025-11-08 11:44:09 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-08 11:44:09 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-08 11:44:09 [INFO]: [SERVER] Ready to accept connections
+2025-11-08 11:44:09 [INFO]: ============================================================
+2025-11-08 11:44:31 [INFO]: [WS] New connection: client_1762573471517_edi01f5uz from ::ffff:100.89.198.55
+2025-11-08 11:44:42 [INFO]: [AUTH] Login attempt: operator1
+2025-11-08 11:44:42 [WARN]: [AUTH] Failed login: operator1
+2025-11-08 11:44:44 [INFO]: [AUTH] Login attempt: operator1
+2025-11-08 11:44:44 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-11-08 11:45:17 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-08 11:45:21 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:45:25 [INFO]: [UDP] Mode changed to: move
+2025-11-08 11:45:28 [INFO]: [UDP] Axis sending started (20Hz)
+2025-11-08 11:45:35 [INFO]: [UDP] Axis sending started (20Hz)
+2025-11-08 11:45:35 [INFO]: [UDP] Axis sending started (20Hz)
+2025-11-08 11:45:43 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 11:45:45 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:48:10 [INFO]: [UDP] Action executed: zero
+2025-11-08 11:48:35 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:49:11 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:53:36 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:53:41 [INFO]: [UDP] Action executed: sit_stand
+2025-11-08 11:54:03 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-08 11:54:03 [INFO]: [CONTROL] Control released by: operator1
+2025-11-08 11:54:19 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-08 12:21:16 [WARN]: [ROS] Connection closed. Attempting reconnect...
+2025-11-08 12:21:16 [INFO]: [SERVER] Shutting down...
+2025-11-08 13:11:01 [INFO]: ============================================================
+2025-11-08 13:11:01 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 13:11:01 [INFO]: ============================================================
+2025-11-08 13:11:01 [INFO]: [UDP] Initializing client...
+2025-11-08 13:11:01 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 13:11:01 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 13:11:01 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 13:11:01 [INFO]: [UDP] Client initialized
+2025-11-08 13:11:01 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 13:11:01 [INFO]: [ROS] Connected to rosbridge
+2025-11-08 13:11:01 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-08 13:11:01 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-08 13:11:01 [INFO]: [SERVER] Ready to accept connections
+2025-11-08 13:11:01 [INFO]: ============================================================
+2025-11-08 13:11:03 [INFO]: [WS] New connection: client_1762578663825_hzdyy5ya0 from ::ffff:100.89.198.55
+2025-11-08 13:11:06 [INFO]: [SERVER] Shutting down...
+2025-11-08 13:15:34 [INFO]: ============================================================
+2025-11-08 13:15:34 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 13:15:34 [INFO]: ============================================================
+2025-11-08 13:15:34 [INFO]: [UDP] Initializing client...
+2025-11-08 13:15:34 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 13:15:34 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 13:15:34 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 13:15:34 [INFO]: [UDP] Client initialized
+2025-11-08 13:15:34 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 13:15:34 [INFO]: [ROS] Connected to rosbridge
+2025-11-08 13:15:34 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-08 13:15:34 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-08 13:15:34 [INFO]: [SERVER] Ready to accept connections
+2025-11-08 13:15:34 [INFO]: ============================================================
+2025-11-08 13:15:36 [INFO]: [WS] New connection: client_1762578936366_17qyoscgo from ::ffff:100.89.198.55
+2025-11-08 13:17:56 [INFO]: [WS] New connection: client_1762579076075_g1px0soyh from ::ffff:192.168.1.103
+2025-11-08 13:18:06 [INFO]: [AUTH] Login attempt: operator1
+2025-11-08 13:18:07 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-11-08 13:18:40 [INFO]: [WS] New connection: client_1762579120533_893pc0l0j from ::ffff:100.89.198.55
+2025-11-08 13:18:53 [INFO]: [AUTH] Login attempt: admin
+2025-11-08 13:18:53 [INFO]: [AUTH] User authenticated: admin (admin)
+2025-11-08 13:19:12 [INFO]: [CONTROL] Control granted to: admin
+2025-11-08 13:20:06 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-08 13:20:06 [INFO]: [CONTROL] Control released by: admin
+2025-11-08 13:20:10 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-08 13:20:18 [INFO]: [CONTROL] Admin admin taking control from operator1
+2025-11-08 13:20:18 [INFO]: [CONTROL] Control granted to: admin
+2025-11-08 13:20:36 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-08 13:20:36 [INFO]: [CONTROL] Control released by: admin
+2025-11-08 13:20:38 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-08 13:20:40 [INFO]: [CONTROL] Admin admin taking control from operator1
+2025-11-08 13:20:40 [INFO]: [CONTROL] Control granted to: admin
+2025-11-08 13:21:51 [INFO]: [WS] Client disconnected: client_1762579076075_g1px0soyh
+2025-11-08 13:22:49 [INFO]: [SERVER] Shutting down...
+2025-11-08 13:23:50 [INFO]: ============================================================
+2025-11-08 13:23:50 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 13:23:50 [INFO]: ============================================================
+2025-11-08 13:23:50 [INFO]: [UDP] Initializing client...
+2025-11-08 13:23:50 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 13:23:50 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 13:23:50 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 13:23:50 [INFO]: [UDP] Client initialized
+2025-11-08 13:23:50 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 13:23:50 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090
+2025-11-08 13:23:59 [INFO]: ============================================================
+2025-11-08 13:23:59 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 13:23:59 [INFO]: ============================================================
+2025-11-08 13:23:59 [INFO]: [UDP] Initializing client...
+2025-11-08 13:23:59 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 13:23:59 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 13:23:59 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 13:23:59 [INFO]: [UDP] Client initialized
+2025-11-08 13:23:59 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 13:23:59 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090
+2025-11-08 13:24:07 [INFO]: ============================================================
+2025-11-08 13:24:07 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-08 13:24:07 [INFO]: ============================================================
+2025-11-08 13:24:07 [INFO]: [UDP] Initializing client...
+2025-11-08 13:24:07 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-08 13:24:07 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-08 13:24:07 [INFO]: [UDP] Mode changed to: pose
+2025-11-08 13:24:07 [INFO]: [UDP] Client initialized
+2025-11-08 13:24:07 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-08 13:24:08 [INFO]: [ROS] Connected to rosbridge
+2025-11-08 13:24:08 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-08 13:24:08 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-08 13:24:08 [INFO]: [SERVER] Ready to accept connections
+2025-11-08 13:24:08 [INFO]: ============================================================
+2025-11-08 13:24:10 [INFO]: [WS] New connection: client_1762579450513_vzr0lxr4m from ::ffff:100.89.198.55
+2025-11-08 13:24:31 [INFO]: [WS] New connection: client_1762579471856_axfmumuiz from ::ffff:100.89.198.55

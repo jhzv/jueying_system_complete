@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jueying Lite3 - Control Remoto Completo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 15px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ============================================================
+           HEADER
+        ============================================================ */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e74c3c;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .latency-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .latency-badge.good {
+            background: rgba(46, 204, 113, 0.3);
+        }
+
+        .latency-badge.warning {
+            background: rgba(241, 196, 15, 0.3);
+        }
+
+        .latency-badge.bad {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .user-role {
+            background: rgba(52, 152, 219, 0.3);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .user-role.admin {
+            background: rgba(231, 76, 60, 0.3);
+        }
+
+        .logout-btn {
+            padding: 6px 15px;
+            background: rgba(231, 76, 60, 0.8);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+
+        /* ============================================================
+           LOGIN SCREEN
+        ============================================================ */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-box h2 {
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .login-btn:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* ============================================================
+           MAIN CONTENT
+        ============================================================ */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1.5fr 2fr 1fr;
+            gap: 15px;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ============================================================
+           LEFT PANEL - VIDEO & STATUS
+        ============================================================ */
+        .video-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .video-container {
+            flex: 1;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            min-height: 300px;
+        }
+
+        .video-container video,
+        .video-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .video-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(52, 152, 219, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .video-btn:hover {
+            background: rgba(52, 152, 219, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .video-btn.active {
+            background: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+
+        /* Robot State Card */
+        .state-card {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .state-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .state-row:last-child {
+            border-bottom: none;
+        }
+
+        .state-label {
+            opacity: 0.7;
+            font-size: 13px;
+        }
+
+        .state-value {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .state-value.standing {
+            color: #2ecc71;
+        }
+
+        .state-value.sitting {
+            color: #f1c40f;
+        }
+
+        .state-value.moving {
+            color: #3498db;
+        }
+
+        /* Battery Indicator */
+        .battery-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .battery-bar {
+            flex: 1;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            transition: width 0.5s, background 0.5s;
+            border-radius: 10px;
+        }
+
+        .battery-fill.low {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        .battery-fill.medium {
+            background: linear-gradient(90deg, #f1c40f, #f39c12);
+        }
+
+        .battery-percentage {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        /* ============================================================
+           CENTER PANEL - JOYSTICKS & CONTROLS
+        ============================================================ */
+        .control-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Safety Interlock Warning */
+        .interlock-warning {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .interlock-warning.show {
+            display: block;
+        }
+
+        /* Stand/Sit Controls */
+        .stand-sit-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stand-btn, .sit-btn {
+            padding: 15px;
+            border: 2px solid;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        .stand-btn {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.3), rgba(39, 174, 96, 0.3));
+            border-color: #2ecc71;
+            color: white;
+        }
+
+        .stand-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.5), rgba(39, 174, 96, 0.5));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .sit-btn {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.3), rgba(243, 156, 18, 0.3));
+            border-color: #f1c40f;
+            color: white;
+        }
+
+        .sit-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(241, 196, 15, 0.5), rgba(243, 156, 18, 0.5));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4);
+        }
+
+        .stand-btn:disabled, .sit-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Mode & Gait Controls */
+        .mode-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mode-group {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .mode-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .mode-buttons, .gait-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn, .gait-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn:hover, .gait-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+
+        .gait-btn.active {
+            background: #2ecc71;
+            border-color: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+
+        /* Joysticks Container */
+        .joysticks-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .joystick-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .joystick-label {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .joystick-sublabel {
+            font-size: 12px;
+            opacity: 0.7;
+            text-align: center;
+            margin-top: -10px;
+        }
+
+        .joystick {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.3) 100%);
+            border-radius: 50%;
+            position: relative;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: grab;
+        }
+
+        .joystick.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .joystick:active {
+            cursor: grabbing;
+        }
+
+        .joystick-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+        }
+
+        .joystick-center::before,
+        .joystick-center::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .joystick-center::before {
+            width: 80px;
+            height: 1px;
+            left: -40px;
+            top: 0;
+        }
+
+        .joystick-center::after {
+            width: 1px;
+            height: 80px;
+            left: 0;
+            top: -40px;
+        }
+
+        .joystick-handle {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.5);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.05s;
+        }
+
+        .joystick-handle.active {
+            box-shadow: 0 5px 25px rgba(52, 152, 219, 0.8);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .joystick-values {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .joystick-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+
+        /* Action Buttons */
+        .actions-panel {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .actions-panel h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(142, 68, 173, 0.6), rgba(155, 89, 182, 0.6));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Emergency Stop */
+        .emergency-stop {
+            padding: 15px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .emergency-stop:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.6);
+        }
+
+        .emergency-stop:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================================
+           RIGHT PANEL - TELEMETRY & DEBUG
+        ============================================================ */
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .info-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-section h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            opacity: 0.7;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .metric-value.good {
+            color: #2ecc71;
+        }
+
+        .metric-value.warning {
+            color: #f1c40f;
+        }
+
+        .metric-value.bad {
+            color: #e74c3c;
+        }
+
+        /* Control Status */
+        .control-status {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .control-status.has-control {
+            background: rgba(46, 204, 113, 0.3);
+            border: 1px solid #2ecc71;
+        }
+
+        .control-status.no-control {
+            background: rgba(231, 76, 60, 0.3);
+            border: 1px solid #e74c3c;
+        }
+
+        .control-btn {
+            width: 100%;
+            padding: 10px;
+            background: #3498db;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .control-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .control-btn.release {
+            background: #e74c3c;
+        }
+
+        .control-btn.release:hover {
+            background: #c0392b;
+        }
+
+        /* Log Panel */
+        .log-panel {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 10px;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 11px;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            opacity: 0.5;
+            margin-right: 8px;
+        }
+
+        .log-info { color: #3498db; }
+        .log-success { color: #2ecc71; }
+        .log-warning { color: #f1c40f; }
+        .log-error { color: #e74c3c; }
+
+        /* Debug Commands */
+        .debug-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .debug-section h4 {
+            font-size: 12px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .debug-commands {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .debug-cmd {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Scrollbar Styling */
+        .info-panel::-webkit-scrollbar,
+        .log-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-panel::-webkit-scrollbar-track,
+        .log-panel::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb,
+        .log-panel::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .info-panel::-webkit-scrollbar-thumb:hover,
+        .log-panel::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            
+            .joysticks-container {
+                flex-direction: row;
+                gap: 20px;
+            }
+            
+            .joystick {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .joystick-handle {
+                width: 55px;
+                height: 55px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h2>🤖 Jueying Lite3</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" placeholder="Ingrese usuario" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" placeholder="Ingrese contraseña" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="serverUrl">Servidor Multiplexor</label>
+                    <input type="text" id="serverUrl" value="ws://localhost:8080" placeholder="ws://host:port">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">Conectar</button>
+                <div class="error-message" id="errorMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN INTERFACE -->
+    <div class="container hidden" id="mainContainer">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🤖</div>
+                <span>Jueying Lite3 Control</span>
+            </div>
+            <div class="connection-status">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="latency-badge" id="latencyBadge">-- ms</div>
+                <div class="user-info">
+                    <span id="userDisplay">Usuario</span>
+                    <span class="user-role" id="userRole">operator</span>
+                    <button class="logout-btn" id="logoutBtn">Salir</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- LEFT PANEL - VIDEO -->
+            <div class="video-panel">
+                <div class="video-container" id="videoContainer">
+                    <div class="video-placeholder">
+                        📹 Click en "Wide Camera" para iniciar stream
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <button class="video-btn" id="wideCameraBtn">📹 Wide Camera</button>
+                    <button class="video-btn" id="stopVideoBtn">⏹️ Stop Stream</button>
+                </div>
+
+                <!-- Robot State -->
+                <div class="state-card">
+                    <div class="state-row">
+                        <span class="state-label">Estado:</span>
+                        <span class="state-value" id="robotState">SIT</span>
+                    </div>
+                    <div class="state-row">
+                        <span class="state-label">Gait:</span>
+                        <span class="state-value" id="robotGaitState">flat_medium</span>
+                    </div>
+                    <div class="state-row">
+                        <span class="state-label">Batería:</span>
+                        <div class="battery-indicator">
+                            <div class="battery-bar">
+                                <div class="battery-fill" id="batteryFill" style="width: 0%"></div>
+                            </div>
+                            <span class="battery-percentage" id="batteryPercent">--%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL - CONTROLS -->
+            <div class="control-panel">
+                <!-- Safety Interlock Warning -->
+                <div class="interlock-warning" id="interlockWarning">
+                    ⚠️ ENCLAVAMIENTO ACTIVO: Robot debe estar DE PIE para mover ⚠️
+                </div>
+
+                <!-- Stand/Sit Buttons -->
+                <div class="stand-sit-controls">
+                    <button class="stand-btn" id="standBtn">⬆️ STAND UP</button>
+                    <button class="sit-btn" id="sitBtn">⬇️ SIT DOWN</button>
+                </div>
+
+                <!-- Mode & Gait Selection -->
+                <div class="mode-controls">
+                    <div class="mode-group">
+                        <label>MODO DE OPERACIÓN</label>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" data-mode="pose">POSE</button>
+                            <button class="mode-btn" data-mode="move">MOVE</button>
+                        </div>
+                    </div>
+                    <div class="mode-group">
+                        <label>GAIT (Solo en MOVE)</label>
+                        <div class="gait-buttons">
+                            <button class="gait-btn" data-gait="flat_slow">Lento</button>
+                            <button class="gait-btn active" data-gait="flat_medium">Medio</button>
+                            <button class="gait-btn" data-gait="flat_fast">Rápido</button>
+                            <button class="gait-btn" data-gait="flat_crawl">Gateo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Joysticks -->
+                <div class="joysticks-container">
+                    <!-- Left Joystick - Linear Movement (X/Y) -->
+                    <div class="joystick-wrapper">
+                        <div class="joystick-label">Movimiento Lineal</div>
+                        <div class="joystick-sublabel">Solo si robot está DE PIE</div>
+                        <div class="joystick" id="joystick-left">
+                            <div class="joystick-center"></div>
+                            <div class="joystick-handle" id="handle-left"></div>
+                        </div>
+                        <div class="joystick-values">
+                            <div class="joystick-value">X: <span id="left-x">0</span>%</div>
+                            <div class="joystick-value">Y: <span id="left-y">0</span>%</div>
+                        </div>
+                    </div>
+
+                    <!-- Right Joystick - Rotation -->
+                    <div class="joystick-wrapper">
+                        <div class="joystick-label">Rotación</div>
+                        <div class="joystick-sublabel">Solo si robot está DE PIE</div>
+                        <div class="joystick" id="joystick-right">
+                            <div class="joystick-center"></div>
+                            <div class="joystick-handle" id="handle-right"></div>
+                        </div>
+                        <div class="joystick-values">
+                            <div class="joystick-value">ROT: <span id="right-rot">0</span>%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons (POSE mode) -->
+                <div class="actions-panel" id="actionsPanel">
+                    <h3>ACCIONES (Solo en modo POSE)</h3>
+                    <div class="action-buttons">
+                        <button class="action-btn" data-action="sit_stand">🪑 Sentarse/Pararse</button>
+                        <button class="action-btn" data-action="say_hello">👋 Saludar</button>
+                        <button class="action-btn" data-action="zero">⭕ Posición Cero</button>
+                        <button class="action-btn" data-action="twist">🔄 Giro</button>
+                        <button class="action-btn" data-action="long_jump">🦘 Salto Largo</button>
+                        <button class="action-btn" data-action="twist_jump">🌀 Salto con Giro</button>
+                        <button class="action-btn" data-action="moonwalk">🌙 Moonwalk</button>
+                    </div>
+                </div>
+
+                <!-- Emergency Stop -->
+                <button class="emergency-stop" id="emergencyBtn">⚠️ PARO DE EMERGENCIA ⚠️</button>
+            </div>
+
+            <!-- RIGHT PANEL - INFO -->
+            <div class="info-panel">
+                <!-- Control Status -->
+                <div class="info-section">
+                    <h3>Estado de Control</h3>
+                    <div class="control-status no-control" id="controlStatus">
+                        <div>Sin control del robot</div>
+                        <button class="control-btn" id="controlBtn">Solicitar Control</button>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div class="info-section">
+                    <h3>Conexión</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">WebSocket:</span>
+                        <span class="metric-value" id="wsStatus">Desconectado</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">ROS:</span>
+                        <span class="metric-value" id="rosStatus">Desconectado</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">UDP:</span>
+                        <span class="metric-value" id="udpStatus">Desconectado</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Latencia:</span>
+                        <span class="metric-value" id="latency">-- ms</span>
+                    </div>
+                </div>
+
+                <!-- Telemetry -->
+                <div class="info-section">
+                    <h3>Telemetría</h3>
+                    <div class="metric-row">
+                        <span class="metric-label">Velocidad Linear:</span>
+                        <span class="metric-value" id="linearVel">0.00 m/s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Velocidad Angular:</span>
+                        <span class="metric-value" id="angularVel">0.00 rad/s</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Orientación:</span>
+                        <span class="metric-value" id="orientation">-- °</span>
+                    </div>
+                </div>
+
+                <!-- Debug Commands -->
+                <div class="info-section">
+                    <h3>Comandos de Debug</h3>
+                    <div class="debug-section">
+                        <h4>ROS Topics:</h4>
+                        <div class="debug-commands">
+                            <div class="debug-cmd">rostopic list</div>
+                            <div class="debug-cmd">rostopic echo /leg_odom</div>
+                            <div class="debug-cmd">rostopic echo /imu/data</div>
+                            <div class="debug-cmd">rostopic hz /cmd_vel</div>
+                        </div>
+                    </div>
+                    <div class="debug-section" style="margin-top: 10px;">
+                        <h4>UDP Debug (Motion Host):</h4>
+                        <div class="debug-commands">
+                            <div class="debug-cmd">tcpdump -i any -n udp port 43893</div>
+                            <div class="debug-cmd">netstat -u | grep 43893</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="info-section">
+                    <h3>Registro de Actividad</h3>
+                    <div class="log-panel" id="logPanel">
+                        <div class="log-entry log-info">
+                            <span class="log-time">00:00:00</span>
+                            <span>Sistema iniciado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // VARIABLES GLOBALES
+        // ============================================================
+        let ws = null;
+        let token = null;
+        let clientId = null;
+        let userData = null;
+        let hasControl = false;
+        let currentMode = 'pose';
+        let currentGait = 'flat_medium';
+        
+        // Robot state
+        let robotBasicState = 1; // 1 = Sitting, 6 = Standing
+        let batteryLevel = 0;
+        
+        // Joystick state
+        const joystickState = {
+            left: { x: 0, y: 0, active: false },
+            right: { rotation: 0, active: false }
+        };
+        
+        // Movement sending interval
+        let movementInterval = null;
+        const MOVEMENT_SEND_RATE = 50; // 20Hz
+        
+        // Latency tracking
+        let lastPingTime = 0;
+        let latency = 0;
+        
+        // Video stream
+        let videoStream = null;
+        let videoStreamActive = false;
+        
+        // ============================================================
+        // LOGIN HANDLING
+        // ============================================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const serverUrl = document.getElementById('serverUrl').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Conectando...';
+            errorMsg.style.display = 'none';
+            
+            try {
+                await connectWebSocket(serverUrl, username, password);
+            } catch (error) {
+                errorMsg.textContent = error.message || 'Error de conexión';
+                errorMsg.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Conectar';
+            }
+        });
+        
+        // ============================================================
+        // WEBSOCKET CONNECTION
+        // ============================================================
+        function connectWebSocket(url, username, password) {
+            return new Promise((resolve, reject) => {
+                addLog('Conectando al multiplexor...', 'info');
+                
+                ws = new WebSocket(url);
+                
+                ws.onopen = () => {
+                    addLog('WebSocket conectado', 'success');
+                    ws.send(JSON.stringify({
+                        type: 'auth',
+                        username: username,
+                        password: password
+                    }));
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        handleWebSocketMessage(message, resolve, reject);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    addLog('Error de WebSocket', 'error');
+                    reject(new Error('Error de conexión WebSocket'));
+                };
+                
+                ws.onclose = () => {
+                    addLog('WebSocket desconectado', 'warning');
+                    updateConnectionStatus(false);
+                    
+                    if (token) {
+                        setTimeout(() => {
+                            addLog('Intentando reconexión...', 'info');
+                            connectWebSocket(url, username, password);
+                        }, 5000);
+                    }
+                };
+            });
+        }
+        
+        // ============================================================
+        // WEBSOCKET MESSAGE HANDLING
+        // ============================================================
+        function handleWebSocketMessage(message, resolve, reject) {
+            switch (message.type) {
+                case 'connected':
+                    clientId = message.clientId;
+                    addLog(`Conectado como ${clientId}`, 'info');
+                    break;
+                    
+                case 'auth_success':
+                    token = message.token;
+                    userData = message.user;
+                    addLog(`Autenticado como ${userData.username}`, 'success');
+                    
+                    document.getElementById('loginContainer').classList.add('hidden');
+                    document.getElementById('mainContainer').classList.remove('hidden');
+                    
+                    document.getElementById('userDisplay').textContent = userData.username;
+                    document.getElementById('userRole').textContent = userData.role;
+                    document.getElementById('userRole').className = `user-role ${userData.role}`;
+                    
+                    updateConnectionStatus(true);
+                    sendMessage({ type: 'status' });
+                    
+                    if (resolve) resolve();
+                    break;
+                    
+                case 'auth_failed':
+                    addLog('Autenticación fallida', 'error');
+                    if (reject) reject(new Error(message.message || 'Autenticación fallida'));
+                    break;
+                    
+                case 'control_granted':
+                    hasControl = true;
+                    updateControlStatus(true);
+                    addLog('Control obtenido', 'success');
+                    break;
+                    
+                case 'control_denied':
+                    hasControl = false;
+                    updateControlStatus(false);
+                    addLog(message.message || 'Control denegado', 'warning');
+                    break;
+                    
+                case 'control_released':
+                    if (hasControl) {
+                        hasControl = false;
+                        updateControlStatus(false);
+                        stopMovementSending();
+                    }
+                    addLog(message.message || 'Control liberado', 'info');
+                    break;
+                    
+                case 'control_taken':
+                    hasControl = false;
+                    updateControlStatus(false);
+                    stopMovementSending();
+                    addLog(message.message || 'Control tomado por otro usuario', 'warning');
+                    break;
+                    
+                case 'status':
+                    updateStatusDisplay(message.data);
+                    break;
+                    
+                case 'telemetry':
+                    updateTelemetry(message.topic, message.data);
+                    break;
+                    
+                case 'command_result':
+                    handleCommandResult(message);
+                    break;
+                    
+                case 'error':
+                    addLog(`Error: ${message.message}`, 'error');
+                    break;
+                    
+                case 'pong':
+                    latency = Date.now() - lastPingTime;
+                    updateLatencyDisplay(latency);
+                    break;
+            }
+        }
+        
+        // ============================================================
+        // SEND MESSAGE
+        // ============================================================
+        function sendMessage(message) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify(message));
+            }
+        }
+        
+        function sendCommand(command, data = {}) {
+            if (!hasControl) {
+                addLog('No tienes control del robot', 'warning');
+                return;
+            }
+            
+            sendMessage({
+                type: 'command',
+                command: command,
+                data: data
+            });
+        }
+        
+        // ============================================================
+        // CONTROL BUTTONS
+        // ============================================================
+        document.getElementById('controlBtn').addEventListener('click', () => {
+            if (hasControl) {
+                sendMessage({ type: 'release_control' });
+            } else {
+                sendMessage({ type: 'request_control' });
+            }
+        });
+        
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (ws) {
+                ws.close();
+            }
+            token = null;
+            hasControl = false;
+            stopVideo();
+            document.getElementById('mainContainer').classList.add('hidden');
+            document.getElementById('loginContainer').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        });
+        
+        // ============================================================
+        // VIDEO STREAM HANDLING
+        // ============================================================
+        document.getElementById('wideCameraBtn').addEventListener('click', () => {
+            if (!videoStreamActive) {
+                startVideoStream();
+            }
+        });
+        
+        document.getElementById('stopVideoBtn').addEventListener('click', () => {
+            stopVideo();
+        });
+        
+        function startVideoStream() {
+            const container = document.getElementById('videoContainer');
+            
+            addLog('Iniciando stream de video...', 'info');
+            
+            // Intentar múltiples URLs de stream
+            const streamUrls = [
+                'http://localhost:8081/stream',           // FFmpeg MJPEG
+                'http://127.0.0.1:8081/stream',          // FFmpeg MJPEG (127.0.0.1)
+                'http://192.168.1.120:8080/stream',       // Stream directo del robot (si existe)
+            ];
+            
+            let currentUrlIndex = 0;
+            
+            function tryNextUrl() {
+                if (currentUrlIndex >= streamUrls.length) {
+                    // Todas las URLs fallaron
+                    container.innerHTML = `
+                        <div class="video-placeholder" style="padding: 20px; text-align: left;">
+                            ❌ No se pudo conectar al stream de video<br><br>
+                            <strong>Opciones para iniciar el stream:</strong><br><br>
+                            
+                            <strong>Opción 1: FFmpeg (Recomendado)</strong><br>
+                            <code style="display: block; background: rgba(0,0,0,0.5); padding: 10px; margin: 5px 0; border-radius: 5px; font-size: 11px;">
+                            ffmpeg -rtsp_transport tcp -i rtsp://192.168.1.120:8554/test \\<br>
+                            &nbsp;&nbsp;-f mjpeg -q:v 5 -r 15 \\<br>
+                            &nbsp;&nbsp;-listen 1 http://127.0.0.1:8081/stream
+                            </code><br>
+                            
+                            <strong>Opción 2: VLC (Más fácil)</strong><br>
+                            1. Abrir VLC<br>
+                            2. Media → Stream<br>
+                            3. Network: <code>rtsp://192.168.1.120:8554/test</code><br>
+                            4. Stream → HTTP: Port 8081<br><br>
+                            
+                            <strong>Opción 3: Ver directamente en VLC</strong><br>
+                            <code style="display: block; background: rgba(0,0,0,0.5); padding: 10px; margin: 5px 0; border-radius: 5px; font-size: 11px;">
+                            vlc rtsp://192.168.1.120:8554/test
+                            </code>
+                        </div>
+                    `;
+                    addLog('Stream de video no disponible. Ver instrucciones en pantalla.', 'warning');
+                    return;
+                }
+                
+                const url = streamUrls[currentUrlIndex];
+                addLog(`Intentando: ${url}`, 'info');
+                
+                const img = document.createElement('img');
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                
+                img.onerror = () => {
+                    addLog(`Falló: ${url}`, 'warning');
+                    currentUrlIndex++;
+                    setTimeout(tryNextUrl, 500);
+                };
+                
+                img.onload = () => {
+                    addLog(`✅ Stream conectado: ${url}`, 'success');
+                    videoStreamActive = true;
+                    document.getElementById('wideCameraBtn').classList.add('active');
+                };
+                
+                img.src = url;
+                container.innerHTML = '';
+                container.appendChild(img);
+            }
+            
+            tryNextUrl();
+        }
+        
+        function stopVideo() {
+            const container = document.getElementById('videoContainer');
+            container.innerHTML = '<div class="video-placeholder">📹 Click en "Wide Camera" para iniciar stream</div>';
+            videoStreamActive = false;
+            document.getElementById('wideCameraBtn').classList.remove('active');
+            addLog('Stream de video detenido', 'info');
+        }
+        
+        // ============================================================
+        // STAND/SIT BUTTONS
+        // ============================================================
+        document.getElementById('standBtn').addEventListener('click', () => {
+            if (!hasControl) {
+                addLog('Necesitas control para parar el robot', 'warning');
+                return;
+            }
+            
+            sendCommand('stand');
+            addLog('Comando: Stand Up', 'info');
+        });
+        
+        document.getElementById('sitBtn').addEventListener('click', () => {
+            if (!hasControl) {
+                addLog('Necesitas control para sentar el robot', 'warning');
+                return;
+            }
+            
+            sendCommand('sit');
+            addLog('Comando: Sit Down', 'info');
+        });
+        
+        // ============================================================
+        // MODE SWITCHING
+        // ============================================================
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const mode = btn.dataset.mode;
+                
+                // Si intenta cambiar a MOVE pero no está de pie, mostrar warning
+                if (mode === 'move' && robotBasicState !== 6) {
+                    addLog('⚠️ Robot debe estar DE PIE para entrar a modo MOVE', 'warning');
+                    return;
+                }
+                
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                sendCommand('set_mode', { mode: mode });
+                currentMode = mode;
+                
+                updateControlsState();
+                
+                addLog(`Modo cambiado a: ${mode}`, 'info');
+            });
+        });
+        
+        // ============================================================
+        // GAIT SWITCHING
+        // ============================================================
+        document.querySelectorAll('.gait-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentMode !== 'move') {
+                    addLog('Gait solo disponible en modo MOVE', 'warning');
+                    return;
+                }
+                
+                const gait = btn.dataset.gait;
+                
+                document.querySelectorAll('.gait-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                sendCommand('set_gait', { gait: gait });
+                currentGait = gait;
+                
+                document.getElementById('robotGaitState').textContent = gait;
+                
+                addLog(`Gait cambiado a: ${gait}`, 'info');
+            });
+        });
+        
+        // ============================================================
+        // ACTION BUTTONS
+        // ============================================================
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (currentMode !== 'pose') {
+                    addLog('Acciones solo disponibles en modo POSE', 'warning');
+                    return;
+                }
+                
+                const action = btn.dataset.action;
+                sendCommand(action);
+                addLog(`Acción ejecutada: ${action}`, 'info');
+            });
+        });
+        
+        // ============================================================
+        // EMERGENCY STOP
+        // ============================================================
+        document.getElementById('emergencyBtn').addEventListener('click', () => {
+            sendCommand('emergency_stop');
+            stopMovementSending();
+            resetJoysticks();
+            addLog('⚠️ PARO DE EMERGENCIA ACTIVADO ⚠️', 'error');
+        });
+        
+        // ============================================================
+        // SAFETY INTERLOCK CHECK
+        // ============================================================
+        function checkSafetyInterlock() {
+            // Robot basic states:
+            // 1 = Sitting, 4 = Prepare, 5 = Sit-to-Stand, 
+            // 6 = Torque-control (Standing), 7 = Stand-to-Sit
+            
+            const isStanding = robotBasicState === 6;
+            const inMoveMode = currentMode === 'move';
+            
+            // Solo mostrar warning y deshabilitar joysticks si está en MOVE y NO está de pie
+            if (inMoveMode && !isStanding) {
+                document.getElementById('interlockWarning').classList.add('show');
+                disableJoysticks();
+                return false;
+            } else {
+                document.getElementById('interlockWarning').classList.remove('show');
+                if (hasControl && inMoveMode && isStanding) {
+                    enableJoysticks();
+                }
+                return true;
+            }
+        }
+        
+        function enableJoysticks() {
+            document.getElementById('joystick-left').classList.remove('disabled');
+            document.getElementById('joystick-right').classList.remove('disabled');
+        }
+        
+        function disableJoysticks() {
+            document.getElementById('joystick-left').classList.add('disabled');
+            document.getElementById('joystick-right').classList.add('disabled');
+            stopMovementSending();
+            resetJoysticks();
+        }
+        
+        // ============================================================
+        // JOYSTICK IMPLEMENTATION
+        // ============================================================
+        function initJoystick(joystickId, handleId, isRotation = false) {
+            const joystick = document.getElementById(joystickId);
+            const handle = document.getElementById(handleId);
+            const rect = joystick.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const maxDistance = rect.width / 2 - 45;
+            
+            let isDragging = false;
+            
+            function updateHandle(clientX, clientY) {
+                const rect = joystick.getBoundingClientRect();
+                const deltaX = clientX - rect.left - centerX;
+                const deltaY = clientY - rect.top - centerY;
+                
+                let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                
+                if (distance > maxDistance) {
+                    distance = maxDistance;
+                }
+                
+                const angle = Math.atan2(deltaY, deltaX);
+                const x = distance * Math.cos(angle);
+                const y = distance * Math.sin(angle);
+                
+                handle.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                
+                if (isRotation) {
+                    const rotation = Math.round((x / maxDistance) * 100);
+                    joystickState.right.rotation = rotation;
+                    document.getElementById('right-rot').textContent = rotation;
+                } else {
+                    const percentX = Math.round((x / maxDistance) * 100);
+                    const percentY = Math.round((-y / maxDistance) * 100);
+                    joystickState.left.x = percentX;
+                    joystickState.left.y = percentY;
+                    document.getElementById('left-x').textContent = percentX;
+                    document.getElementById('left-y').textContent = percentY;
+                }
+            }
+            
+            function resetHandle() {
+                handle.style.transform = 'translate(-50%, -50%)';
+                
+                if (isRotation) {
+                    joystickState.right.rotation = 0;
+                    joystickState.right.active = false;
+                    document.getElementById('right-rot').textContent = '0';
+                } else {
+                    joystickState.left.x = 0;
+                    joystickState.left.y = 0;
+                    joystickState.left.active = false;
+                    document.getElementById('left-x').textContent = '0';
+                    document.getElementById('left-y').textContent = '0';
+                }
+                
+                handle.classList.remove('active');
+            }
+            
+            joystick.addEventListener('mousedown', (e) => {
+                // Check safety interlock
+                if (!hasControl || currentMode !== 'move' || !checkSafetyInterlock()) {
+                    if (currentMode === 'move' && robotBasicState !== 6) {
+                        addLog('⚠️ Robot debe estar DE PIE para mover', 'warning');
+                    }
+                    return;
+                }
+                
+                isDragging = true;
+                handle.classList.add('active');
+                
+                if (isRotation) {
+                    joystickState.right.active = true;
+                } else {
+                    joystickState.left.active = true;
+                }
+                
+                startMovementSending();
+                updateHandle(e.clientX, e.clientY);
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateHandle(e.clientX, e.clientY);
+                }
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    resetHandle();
+                    
+                    if (!joystickState.left.active && !joystickState.right.active) {
+                        stopMovementSending();
+                    }
+                }
+            });
+            
+            // Touch events
+            joystick.addEventListener('touchstart', (e) => {
+                if (!hasControl || currentMode !== 'move' || !checkSafetyInterlock()) {
+                    if (currentMode === 'move' && robotBasicState !== 6) {
+                        addLog('⚠️ Robot debe estar DE PIE para mover', 'warning');
+                    }
+                    return;
+                }
+                
+                e.preventDefault();
+                isDragging = true;
+                handle.classList.add('active');
+                
+                if (isRotation) {
+                    joystickState.right.active = true;
+                } else {
+                    joystickState.left.active = true;
+                }
+                
+                startMovementSending();
+                const touch = e.touches[0];
+                updateHandle(touch.clientX, touch.clientY);
+            });
+            
+            document.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    updateHandle(touch.clientX, touch.clientY);
+                }
+            });
+            
+            document.addEventListener('touchend', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    resetHandle();
+                    
+                    if (!joystickState.left.active && !joystickState.right.active) {
+                        stopMovementSending();
+                    }
+                }
+            });
+        }
+        
+        initJoystick('joystick-left', 'handle-left', false);
+        initJoystick('joystick-right', 'handle-right', true);
+        
+        // ============================================================
+        // MOVEMENT SENDING
+        // ============================================================
+        function startMovementSending() {
+            if (movementInterval) return;
+            
+            movementInterval = setInterval(() => {
+                if (currentMode !== 'move' || !hasControl || !checkSafetyInterlock()) {
+                    stopMovementSending();
+                    return;
+                }
+                
+                const leftRight = joystickState.left.x;
+                const forwardBack = joystickState.left.y;
+                const rotation = joystickState.right.rotation;
+                
+                sendCommand('move', {
+                    forward_back: forwardBack,
+                    left_right: leftRight,
+                    rotation: rotation
+                });
+                
+            }, MOVEMENT_SEND_RATE);
+        }
+        
+        function stopMovementSending() {
+            if (movementInterval) {
+                clearInterval(movementInterval);
+                movementInterval = null;
+            }
+            
+            if (hasControl && currentMode === 'move') {
+                sendCommand('stop');
+            }
+        }
+        
+        function resetJoysticks() {
+            joystickState.left.x = 0;
+            joystickState.left.y = 0;
+            joystickState.left.active = false;
+            joystickState.right.rotation = 0;
+            joystickState.right.active = false;
+            
+            document.getElementById('left-x').textContent = '0';
+            document.getElementById('left-y').textContent = '0';
+            document.getElementById('right-rot').textContent = '0';
+            
+            document.getElementById('handle-left').style.transform = 'translate(-50%, -50%)';
+            document.getElementById('handle-right').style.transform = 'translate(-50%, -50%)';
+            document.getElementById('handle-left').classList.remove('active');
+            document.getElementById('handle-right').classList.remove('active');
+        }
+        
+        // ============================================================
+        // UI UPDATES
+        // ============================================================
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const wsStatus = document.getElementById('wsStatus');
+            
+            if (connected) {
+                indicator.classList.add('connected');
+                wsStatus.textContent = 'Conectado';
+                wsStatus.className = 'metric-value good';
+            } else {
+                indicator.classList.remove('connected');
+                wsStatus.textContent = 'Desconectado';
+                wsStatus.className = 'metric-value bad';
+            }
+        }
+        
+        function updateControlStatus(has) {
+            const status = document.getElementById('controlStatus');
+            const btn = document.getElementById('controlBtn');
+            
+            if (has) {
+                status.className = 'control-status has-control';
+                status.querySelector('div').textContent = '✅ Tienes control del robot';
+                btn.textContent = 'Liberar Control';
+                btn.className = 'control-btn release';
+            } else {
+                status.className = 'control-status no-control';
+                status.querySelector('div').textContent = 'Sin control del robot';
+                btn.textContent = 'Solicitar Control';
+                btn.className = 'control-btn';
+            }
+            
+            updateControlsState();
+        }
+        
+        function updateControlsState() {
+            const actionButtons = document.querySelectorAll('.action-btn');
+            const modeButtons = document.querySelectorAll('.mode-btn');
+            const gaitButtons = document.querySelectorAll('.gait-btn');
+            const standBtn = document.getElementById('standBtn');
+            const sitBtn = document.getElementById('sitBtn');
+            
+            const canControl = hasControl;
+            const inPoseMode = currentMode === 'pose';
+            const inMoveMode = currentMode === 'move';
+            
+            // Stand/Sit buttons siempre habilitados si tienes control
+            standBtn.disabled = !canControl;
+            sitBtn.disabled = !canControl;
+            
+            // Botones de acción solo en modo POSE
+            actionButtons.forEach(btn => {
+                btn.disabled = !canControl || !inPoseMode;
+            });
+            
+            // Botones de gait solo en modo MOVE
+            gaitButtons.forEach(btn => {
+                btn.disabled = !canControl || !inMoveMode;
+            });
+            
+            // Botones de modo siempre habilitados si tienes control
+            modeButtons.forEach(btn => {
+                btn.disabled = !canControl;
+            });
+            
+            // Actualizar estado de joysticks según modo y estado del robot
+            if (inMoveMode) {
+                checkSafetyInterlock();
+            } else {
+                // En modo POSE, deshabilitar joysticks
+                disableJoysticks();
+                document.getElementById('interlockWarning').classList.remove('show');
+            }
+        }
+        
+        function updateStatusDisplay(data) {
+            if (data.ros) {
+                const rosStatus = document.getElementById('rosStatus');
+                rosStatus.textContent = data.ros.connected ? 'Conectado' : 'Desconectado';
+                rosStatus.className = data.ros.connected ? 'metric-value good' : 'metric-value bad';
+            }
+            
+            if (data.udp) {
+                const udpStatus = document.getElementById('udpStatus');
+                udpStatus.textContent = data.udp.connected ? 'Conectado' : 'Desconectado';
+                udpStatus.className = data.udp.connected ? 'metric-value good' : 'metric-value bad';
+                
+                if (data.udp.mode) {
+                    currentMode = data.udp.mode;
+                }
+                if (data.udp.gait) {
+                    currentGait = data.udp.gait;
+                    document.getElementById('robotGaitState').textContent = currentGait;
+                }
+            }
+            
+            if (data.control) {
+                hasControl = data.control.hasControl;
+                updateControlStatus(hasControl);
+            }
+        }
+        
+        function updateTelemetry(topic, data) {
+            if (topic === 'odometry') {
+                const linearVel = Math.sqrt(
+                    data.twist.twist.linear.x ** 2 +
+                    data.twist.twist.linear.y ** 2
+                ).toFixed(2);
+                const angularVel = Math.abs(data.twist.twist.angular.z).toFixed(2);
+                
+                document.getElementById('linearVel').textContent = `${linearVel} m/s`;
+                document.getElementById('angularVel').textContent = `${angularVel} rad/s`;
+            }
+            
+            if (topic === 'imu') {
+                const orientation = Math.round(Math.atan2(
+                    2 * (data.orientation.w * data.orientation.z + data.orientation.x * data.orientation.y),
+                    1 - 2 * (data.orientation.y ** 2 + data.orientation.z ** 2)
+                ) * 180 / Math.PI);
+                
+                document.getElementById('orientation').textContent = `${orientation}°`;
+            }
+            
+            // Update robot state and battery from UDP state messages
+            if (topic === 'robot_state') {
+                // robot_basic_state: 1=Sit, 4=Prepare, 5=Sit-to-Stand, 6=Standing, 7=Stand-to-Sit
+                if (data.robot_basic_state !== undefined) {
+                    robotBasicState = data.robot_basic_state;
+                    updateRobotStateDisplay(robotBasicState);
+                    checkSafetyInterlock();
+                }
+                
+                // battery_level in decimal form (0.0 to 1.0)
+                if (data.battery_level !== undefined) {
+                    batteryLevel = Math.round(data.battery_level * 100);
+                    updateBatteryDisplay(batteryLevel);
+                }
+            }
+        }
+        
+        function updateRobotStateDisplay(state) {
+            const stateEl = document.getElementById('robotState');
+            const stateNames = {
+                1: 'SIT',
+                4: 'PREPARE',
+                5: 'SITTING→STANDING',
+                6: 'STANDING',
+                7: 'STANDING→SITTING',
+                8: 'PROTECTION',
+                9: 'ADJUSTING',
+                11: 'FLIPPING',
+                17: 'RESET-TO-ZERO',
+                18: 'BACKFLIP',
+                20: 'HELLO'
+            };
+            
+            stateEl.textContent = stateNames[state] || `STATE_${state}`;
+            
+            // Color coding
+            stateEl.className = 'state-value';
+            if (state === 6) {
+                stateEl.classList.add('standing');
+            } else if (state === 1) {
+                stateEl.classList.add('sitting');
+            } else {
+                stateEl.classList.add('moving');
+            }
+        }
+        
+        function updateBatteryDisplay(percent) {
+            const fill = document.getElementById('batteryFill');
+            const text = document.getElementById('batteryPercent');
+            
+            fill.style.width = `${percent}%`;
+            text.textContent = `${percent}%`;
+            
+            // Color coding
+            fill.className = 'battery-fill';
+            if (percent < 20) {
+                fill.classList.add('low');
+            } else if (percent < 50) {
+                fill.classList.add('medium');
+            }
+        }
+        
+        function updateLatencyDisplay(ms) {
+            const badge = document.getElementById('latencyBadge');
+            const display = document.getElementById('latency');
+            
+            badge.textContent = `${ms} ms`;
+            display.textContent = `${ms} ms`;
+            
+            badge.className = 'latency-badge';
+            display.className = 'metric-value';
+            
+            if (ms < 50) {
+                badge.classList.add('good');
+                display.classList.add('good');
+            } else if (ms < 100) {
+                badge.classList.add('warning');
+                display.classList.add('warning');
+            } else {
+                badge.classList.add('bad');
+                display.classList.add('bad');
+            }
+        }
+        
+        function handleCommandResult(message) {
+            if (message.success) {
+                addLog(`Comando ${message.command} ejecutado`, 'success');
+            } else {
+                addLog(`Comando ${message.command} fallido`, 'error');
+            }
+        }
+        
+        // ============================================================
+        // LOGGING
+        // ============================================================
+        function addLog(text, type = 'info') {
+            const logPanel = document.getElementById('logPanel');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            
+            const now = new Date();
+            const time = now.toLocaleTimeString();
+            
+            entry.innerHTML = `<span class="log-time">${time}</span><span>${text}</span>`;
+            
+            logPanel.insertBefore(entry, logPanel.firstChild);
+            
+            while (logPanel.children.length > 50) {
+                logPanel.removeChild(logPanel.lastChild);
+            }
+        }
+        
+        // ============================================================
+        // PING FOR LATENCY
+        // ============================================================
+        setInterval(() => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                lastPingTime = Date.now();
+                sendMessage({ type: 'ping' });
+            }
+        }, 2000);
+        
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', (e) => {
+            if (!hasControl || currentMode !== 'move') return;
+            
+            if (e.key === 'Escape') {
+                document.getElementById('emergencyBtn').click();
+            }
+        });
+        
+        // ============================================================
+        // CLEANUP ON UNLOAD
+        // ============================================================
+        window.addEventListener('beforeunload', () => {
+            stopMovementSending();
+            stopVideo();
+            if (ws) {
+                ws.close();
+            }
+        });
+    </script>
+</body>
+</html>

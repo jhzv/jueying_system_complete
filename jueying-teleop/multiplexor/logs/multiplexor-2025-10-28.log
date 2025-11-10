@@ -1,0 +1,59 @@
+2025-10-28 06:28:20 [INFO]: ============================================================
+2025-10-28 06:28:20 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-10-28 06:28:20 [INFO]: ============================================================
+2025-10-28 06:28:20 [INFO]: [UDP] Initializing client...
+2025-10-28 06:28:20 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-10-28 06:28:20 [INFO]: [UDP] Heartbeat started (250ms)
+2025-10-28 06:28:20 [INFO]: [UDP] Mode changed to: pose
+2025-10-28 06:28:20 [INFO]: [UDP] Client initialized
+2025-10-28 06:28:20 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-10-28 06:28:20 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090
+2025-10-28 06:29:33 [INFO]: ============================================================
+2025-10-28 06:29:33 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-10-28 06:29:33 [INFO]: ============================================================
+2025-10-28 06:29:33 [INFO]: [UDP] Initializing client...
+2025-10-28 06:29:33 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-10-28 06:29:33 [INFO]: [UDP] Heartbeat started (250ms)
+2025-10-28 06:29:33 [INFO]: [UDP] Mode changed to: pose
+2025-10-28 06:29:33 [INFO]: [UDP] Client initialized
+2025-10-28 06:29:33 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-10-28 06:29:34 [INFO]: [ROS] Connected to rosbridge
+2025-10-28 06:29:34 [INFO]: [ROS] Subscribed to telemetry topics
+2025-10-28 06:29:34 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-10-28 06:29:34 [INFO]: [SERVER] Ready to accept connections
+2025-10-28 06:29:34 [INFO]: ============================================================
+2025-10-28 06:37:26 [INFO]: [SERVER] Shutting down...
+2025-10-28 06:37:35 [INFO]: ============================================================
+2025-10-28 06:37:35 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-10-28 06:37:35 [INFO]: ============================================================
+2025-10-28 06:37:35 [INFO]: [UDP] Initializing client...
+2025-10-28 06:37:35 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-10-28 06:37:35 [INFO]: [UDP] Heartbeat started (250ms)
+2025-10-28 06:37:35 [INFO]: [UDP] Mode changed to: pose
+2025-10-28 06:37:35 [INFO]: [UDP] Client initialized
+2025-10-28 06:37:35 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-10-28 06:37:35 [INFO]: [ROS] Connected to rosbridge
+2025-10-28 06:37:35 [INFO]: [ROS] Subscribed to telemetry topics
+2025-10-28 06:37:35 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-10-28 06:37:35 [INFO]: [SERVER] Ready to accept connections
+2025-10-28 06:37:35 [INFO]: ============================================================
+2025-10-28 06:50:12 [INFO]: [WS] New connection: client_1761605412058_ky919umaw from ::1
+2025-10-28 06:50:12 [INFO]: [AUTH] Login attempt: operator1
+2025-10-28 06:50:12 [WARN]: [AUTH] Failed login: operator1
+2025-10-28 06:50:22 [INFO]: [WS] New connection: client_1761605422708_73769ixkr from ::1
+2025-10-28 06:50:22 [INFO]: [AUTH] Login attempt: operator1
+2025-10-28 06:50:22 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-10-28 06:50:32 [INFO]: [CONTROL] Control granted to: operator1
+2025-10-28 06:51:25 [INFO]: [UDP] Action executed: sit_stand
+2025-10-28 06:56:46 [INFO]: [UDP] Action executed: sit_stand
+2025-10-28 07:16:44 [INFO]: [WS] Client disconnected: client_1761605422708_73769ixkr
+2025-10-28 07:16:44 [INFO]: [CONTROL] Control released
+2025-10-28 07:16:44 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-10-28 07:16:44 [INFO]: [WS] Client disconnected: client_1761605412058_ky919umaw
+2025-10-28 07:16:53 [INFO]: [WS] New connection: client_1761607013754_fs1for9id from ::1
+2025-10-28 07:16:53 [INFO]: [AUTH] Login attempt: operator1
+2025-10-28 07:16:53 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-10-28 07:16:56 [INFO]: [CONTROL] Control granted to: operator1
+2025-10-28 07:17:00 [INFO]: [UDP] Action executed: sit_stand
+2025-10-28 07:18:33 [INFO]: [UDP] Action executed: sit_stand
+2025-10-28 07:18:53 [INFO]: [UDP] Action executed: sit_stand

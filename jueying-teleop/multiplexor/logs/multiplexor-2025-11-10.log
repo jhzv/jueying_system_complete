@@ -1,0 +1,48 @@
+2025-11-10 03:21:25 [INFO]: ============================================================
+2025-11-10 03:21:25 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-10 03:21:25 [INFO]: ============================================================
+2025-11-10 03:21:25 [INFO]: [UDP] Initializing client...
+2025-11-10 03:21:25 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-10 03:21:25 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-10 03:21:25 [INFO]: [UDP] Mode changed to: pose
+2025-11-10 03:21:25 [INFO]: [UDP] Client initialized
+2025-11-10 03:21:25 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-10 03:21:25 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090
+2025-11-10 03:21:33 [INFO]: ============================================================
+2025-11-10 03:21:33 [INFO]: Jueying Lite3 Multiplexor v2.1 - Hybrid ROS + UDP
+2025-11-10 03:21:33 [INFO]: ============================================================
+2025-11-10 03:21:33 [INFO]: [UDP] Initializing client...
+2025-11-10 03:21:33 [INFO]: [UDP] Client ready. Target: 192.168.1.120:43893
+2025-11-10 03:21:33 [INFO]: [UDP] Heartbeat started (250ms)
+2025-11-10 03:21:33 [INFO]: [UDP] Mode changed to: pose
+2025-11-10 03:21:33 [INFO]: [UDP] Client initialized
+2025-11-10 03:21:33 [INFO]: [ROS] Connecting to rosbridge: ws://localhost:9090
+2025-11-10 03:21:33 [INFO]: [ROS] Connected to rosbridge
+2025-11-10 03:21:33 [INFO]: [ROS] Subscribed to telemetry topics
+2025-11-10 03:21:33 [INFO]: [SERVER] WebSocket listening on port 8080
+2025-11-10 03:21:33 [INFO]: [SERVER] Ready to accept connections
+2025-11-10 03:21:33 [INFO]: ============================================================
+2025-11-10 03:21:37 [INFO]: [WS] New connection: client_1762716097415_ki5lotxnm from ::ffff:100.89.198.55
+2025-11-10 03:40:19 [INFO]: [WS] New connection: client_1762717219918_dv7zqeol1 from ::ffff:100.106.194.3
+2025-11-10 03:40:39 [INFO]: [AUTH] Login attempt: operator1
+2025-11-10 03:40:39 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-11-10 03:41:04 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-10 03:41:06 [INFO]: [UDP] Action executed: sit_stand
+2025-11-10 03:41:14 [INFO]: [UDP] Action executed: sit_stand
+2025-11-10 03:41:18 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-10 03:41:18 [INFO]: [CONTROL] Control released by: operator1
+2025-11-10 03:52:47 [INFO]: [WS] Client disconnected: client_1762717219918_dv7zqeol1
+2025-11-10 03:54:56 [INFO]: [WS] New connection: client_1762718096542_f34if50q6 from ::ffff:100.106.194.3
+2025-11-10 03:55:03 [INFO]: [WS] Client disconnected: client_1762718096542_f34if50q6
+2025-11-10 03:55:03 [INFO]: [WS] New connection: client_1762718103529_u32dpxskl from ::ffff:100.106.194.3
+2025-11-10 03:55:16 [INFO]: [AUTH] Login attempt: operator1
+2025-11-10 03:55:16 [INFO]: [AUTH] User authenticated: operator1 (operator)
+2025-11-10 03:56:42 [INFO]: [CONTROL] Control granted to: operator1
+2025-11-10 03:56:44 [INFO]: [UDP] Action executed: sit_stand
+2025-11-10 03:56:53 [INFO]: [UDP] Mode changed to: move
+2025-11-10 03:56:55 [INFO]: [UDP] Gait set to: flat_slow
+2025-11-10 03:56:57 [INFO]: [UDP] Axis sending started (20Hz)
+2025-11-10 03:57:12 [INFO]: [UDP] Mode changed to: pose
+2025-11-10 03:57:13 [INFO]: [UDP] Action executed: sit_stand
+2025-11-10 03:57:19 [WARN]: [UDP] Axis control only works in MOVE mode
+2025-11-10 03:57:19 [INFO]: [CONTROL] Control released by: operator1

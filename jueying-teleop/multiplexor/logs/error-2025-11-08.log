@@ -1,0 +1,2 @@
+2025-11-08 13:23:50 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090
+2025-11-08 13:23:59 [ERROR]: [ROS] Connection error: connect ECONNREFUSED 127.0.0.1:9090

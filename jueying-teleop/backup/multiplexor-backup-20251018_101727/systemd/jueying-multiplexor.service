@@ -1,0 +1,29 @@
+[Unit]
+Description=Jueying Lite3 Multiplexor WebSocket Server (Hybrid ROS+UDP)
+Documentation=https://github.com/tu-org/jueying-multiplexor
+After=network.target roscore.service
+
+[Service]
+Type=simple
+User=ysc
+Group=ysc
+WorkingDirectory=/home/ysc/jueying-teleop/multiplexor
+Environment="NODE_ENV=production"
+Environment="PATH=/home/ysc/.nvm/versions/node/v18.20.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/ysc/.nvm/versions/node/v18.20.0/bin/node src/server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=jueying-multiplexor
+
+# Limites de recursos
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Seguridad
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

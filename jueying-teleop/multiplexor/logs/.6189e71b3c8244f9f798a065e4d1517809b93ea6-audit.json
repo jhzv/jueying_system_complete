@@ -1,0 +1,45 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/ysc/jueying-teleop/multiplexor/logs/.6189e71b3c8244f9f798a065e4d1517809b93ea6-audit.json",
+    "files": [
+        {
+            "date": 1761604099900,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-10-28.log",
+            "hash": "d82cb699d1ed3ab8d680bab4e24a9c1d8ccdbdfdae368f59b43d0754c1d3eb60"
+        },
+        {
+            "date": 1761667673816,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-10-29.log",
+            "hash": "5bd2526adab6ba932d5dcc9bafd81e6364bc0b3b78895d0260c499f55b8d0ab7"
+        },
+        {
+            "date": 1762396598512,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-11-06.log",
+            "hash": "2a59ea31f85a166f7789096230b2052b9bfab294082fb00fcb7270d99a6847ea"
+        },
+        {
+            "date": 1762485025282,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-11-07.log",
+            "hash": "efaaf279fe8085e7a3c958005edc6144bd7f284e6e8edbb38be2bd8831038039"
+        },
+        {
+            "date": 1762573267255,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-11-08.log",
+            "hash": "1520c76e30ce3625a68fb5d595cae41e0c8a697e3d791e0a99d094329554f500"
+        },
+        {
+            "date": 1762630324587,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-11-09.log",
+            "hash": "ab4593b036e19f267e0751bf3f9c3a3bda81b00e96b07100fe6409417f4c9ec2"
+        },
+        {
+            "date": 1762716084914,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/multiplexor-2025-11-10.log",
+            "hash": "c3d4432d3e12138f348a8228158398b0985bbe9ae60f5c04bca79bb841f5de9e"
+        }
+    ],
+    "hashType": "sha256"
+}

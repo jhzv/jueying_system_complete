@@ -1,0 +1,28 @@
+[Unit]
+Description=Jueying Multiplexor WebSocket Server
+Documentation=https://github.com/your-org/jueying-multiplexor
+After=network.target roscore.service
+
+[Service]
+Type=simple
+User=ysc
+WorkingDirectory=/home/ysc/jueying-teleop/multiplexor
+Environment="NODE_ENV=production"
+Environment="PATH=/home/ysc/.nvm/versions/node/v18.18.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/home/ysc/.nvm/versions/node/v18.18.0/bin/node src/server.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=jueying-multiplexor
+
+# Límites de recursos
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Seguridad
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

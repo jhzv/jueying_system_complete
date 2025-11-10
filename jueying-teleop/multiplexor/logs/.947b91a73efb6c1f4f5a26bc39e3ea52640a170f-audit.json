@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/home/ysc/jueying-teleop/multiplexor/logs/.947b91a73efb6c1f4f5a26bc39e3ea52640a170f-audit.json",
+    "files": [
+        {
+            "date": 1760755344925,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-10-18.log",
+            "hash": "496b721679a4d743bd950ba3579ccc56db9c3e73d1a4bdd0944fc8808141c672"
+        },
+        {
+            "date": 1760845011740,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-10-19.log",
+            "hash": "47d95591f8430922d95b41eb6c7a6256c48469e06cc595b5470e3041107aa794"
+        },
+        {
+            "date": 1761257437511,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-10-24.log",
+            "hash": "c4e5029eddf497dbe55f00ff28c14459045ab7f976e1af5d7525359fcd01c86d"
+        },
+        {
+            "date": 1761604099918,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-10-28.log",
+            "hash": "16519d30a9bf23bdf0bc524ad0ed69d2d4ac7849cbd4b263e8120df4ca6c7bf6"
+        },
+        {
+            "date": 1761667673836,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-10-29.log",
+            "hash": "32694ecf24a2139be58a0e2c9e0ef0efee9b6d82b27d683abdcfdf485ca2e5b8"
+        },
+        {
+            "date": 1762396598538,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-11-06.log",
+            "hash": "fb28199310f4f217993916fbd5f5300a9f3d3027472118ab02560b88310f27ef"
+        },
+        {
+            "date": 1762485025306,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-11-07.log",
+            "hash": "2272e11f34df96322f3e5ba5040b0f78cd62f62199823f9a65ecbca9c1e38b93"
+        },
+        {
+            "date": 1762573267275,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-11-08.log",
+            "hash": "9c6fe9555d32955472aad7c802cd2f49190d04f73ba8c7fb3a84c9c943231603"
+        },
+        {
+            "date": 1762630324606,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-11-09.log",
+            "hash": "a94026f4bbaec8d49259af145f695ea1e8535d2ad243e8e208c41c91d817aa67"
+        },
+        {
+            "date": 1762716084933,
+            "name": "/home/ysc/jueying-teleop/multiplexor/logs/error-2025-11-10.log",
+            "hash": "c172a81bba75bc836e5daad94085cad6c2553f70cf357235766e77f1e96a0231"
+        }
+    ],
+    "hashType": "sha256"
+}
